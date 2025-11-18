@@ -1,0 +1,2 @@
+Este repositório apresenta o desenvolvimento de um Sistema de Adoção de Animais em Python, utilizando princípios de POO.
+O projeto foi criado para fins acadêmicos e aborda modelagem, padrões de projeto, encapsulamento, herança, testes e boas práticas de engenharia de software.
