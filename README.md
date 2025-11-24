@@ -3,9 +3,9 @@
 **Instituição:** Universidade Federal do Cariri (UFCA)  
 **Curso:** Engenharia de Software  
 **Disciplina:** Programação Orientada a Objetos  
-**Prof. Orientador:** Jayr Alencar Pereira
-**Aluno:** Gabriel Souza Santos
-**Semestre:** 2025.2
+**Prof. Orientador:** Jayr Alencar Pereira  
+**Aluno:** Gabriel Souza Santos  
+**Semestre:** 2025.2  
 
 Este repositório apresenta o desenvolvimento de um Sistema de Gerenciamento de Adoção de Animais, implementado em Python e fundamentado nos princípios da Programação Orientada a Objetos (POO). O projeto foi concebido com finalidade acadêmica e contempla a modelagem de domínio, aplicação de padrões de projeto, uso adequado de encapsulamento, herança e polimorfismo, além da elaboração de testes e adoção de boas práticas de engenharia de software.
 
@@ -108,7 +108,6 @@ classDiagram
         + UNADOPTABLE
         + is_valid_transition(): bool
     }
-
 
     class Cat {
         + independence: bool
