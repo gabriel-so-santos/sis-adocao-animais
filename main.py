@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-app = Flask(__name__, template_folder="app/templates")
+app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
 
 from app.routes import *
 
