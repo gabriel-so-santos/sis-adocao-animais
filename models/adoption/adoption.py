@@ -1,7 +1,8 @@
-from uuid import uuid
+import uuid
 from datetime import datetime
-from animals import Cat, Dog
-from people import Adopter
+from models.animals.cat import Cat
+from models.animals.dog import Dog
+from models.people.adopter import Adopter
 
 class Adoption:
     """Representa o registro de uma adoção.

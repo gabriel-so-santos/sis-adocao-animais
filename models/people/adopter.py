@@ -33,7 +33,7 @@ class Adopter(Person):
         self.housing_type = housing_type
         self.usable_area = usable_area
         self.has_pet_experience = has_pet_experience
-        self.has_children_at_home = has_children_at_home
+        self.has_childre_at_home = has_children_at_home
         self.has_other_animals = has_other_animals
 
     def compatibility_rate(self) -> float:

@@ -1,5 +1,5 @@
 from abc import ABC
-from uuid import uuid
+import uuid
 from animal_status import *
 
 class Gender(Enum):

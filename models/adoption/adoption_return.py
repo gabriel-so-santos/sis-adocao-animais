@@ -1,4 +1,4 @@
-from uuid import uuid
+import uuid
 from datetime import datetime
 from adoption import Adoption
 

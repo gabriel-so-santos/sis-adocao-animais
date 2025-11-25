@@ -1,5 +1,5 @@
 from abc import ABC
-from _uuid import uuid
+import uuid
 
 class Person(ABC):
     """Classe base abstrata para representar pessoas do sistema.
