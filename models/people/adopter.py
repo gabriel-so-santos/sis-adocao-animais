@@ -13,29 +13,30 @@ class Adopter(Person):
     Attributes:
         housing (HousingType): Tipo de moradia do adotante.
         usable_area (float): Área útil do imóvel em m².
-        pet_experience (bool): Indica se possui experiência prévia com pets.
-        children_at_home (bool): Indica se há crianças na residência.
-        other_animals (bool): Indica se já existem outros animais na casa.
+        has_pet_experience (bool): Indica se possui experiência prévia com pets.
+        has_children_at_home (bool): Indica se há crianças na residência.
+        has_other_animals (bool): Indica se já existem outros animais na casa.
     """
 
     def __init__(
         self,
         name: str,
         age: int,
-        housing: HousingType,
+        housing_type: HousingType,
         usable_area: float,
-        pet_experience: bool = False,
-        children_at_home: bool = False,
-        other_animals: bool = False,
+        has_pet_experience: bool = False,
+        has_children_at_home: bool = False,
+        has_other_animals: bool = False
     ):
         super().__init__(name=name, age=age)
-        self.housing = housing
-        self.usable_area = usable_area
-        self.pet_experience = pet_experience
-        self.children_at_home = children_at_home
-        self.other_animals = other_animals
 
-    def calculate_compatibility(self) -> float:
+        self.housing_type = housing_type
+        self.usable_area = usable_area
+        self.has_pet_experience = has_pet_experience
+        self.has_children_at_home = has_children_at_home
+        self.has_other_animals = has_other_animals
+
+    def compatibility_rate(self) -> float:
         """Calcula o score de compatibilidade entre o adotante e um animal.
         ...
 
@@ -43,3 +44,60 @@ class Adopter(Person):
             float: Valor entre 0 e 100 representando o nível de compatibilidade.
         """
         pass
+        
+    # -------------------------- PROPERTIES --------------------------
+
+    # ---- Housing Type ----
+    @property
+    def housing_type(self) -> HousingType: 
+        return self.__housing_type
+    
+    @housing_type.setter
+    def housing_type(self, v: HousingType) -> None:
+        if not isinstance(v, HousingType):
+            raise TypeError("housing_type deve ser item do enum HousingType.")
+        self.__housing_type = v
+
+    # ---- Usable Area ----
+    @property
+    def usable_area(self) -> float:
+        return self.__usable_area
+    
+    @usable_area.setter
+    def usable_area(self, v: float) -> None:
+        if v <= 0:
+            raise ValueError("usable_area deve ser maior que zero.")
+        self.__usable_area = v
+    
+    # ---- Pet Experience ----
+    @property
+    def has_pet_experience(self) -> bool:
+        return self.__has_pet_experience
+    
+    @has_pet_experience.setter
+    def has_pet_experience(self, v: bool) -> None:
+        if not isinstance(v, bool):
+            raise TypeError("has_pet_experience deve ser um booleano.")
+        self.__has_pet_experience = v
+
+    # ---- Children at Home ----
+    @property
+    def has_children_at_home(self) -> bool:
+        return self.__has_children_at_home
+
+    @has_children_at_home.setter
+    def has_children_at_home(self, v: bool) -> None:
+        if not isinstance(v, bool):
+            raise TypeError("has_children_at_home deve ser um booleano.")
+        self.__has_children_at_home = v
+
+    # ---- Other Animals ----
+    @property
+    def has_other_animals(self) -> bool: 
+        return self.__has_other_animals
+    
+    @has_other_animals.setter
+    def has_other_animals(self, v: bool) -> None:
+        if not isinstance(v, bool):
+            raise TypeError("has_other_animals deve ser um booleano.")
+        self.__has_other_animals = v

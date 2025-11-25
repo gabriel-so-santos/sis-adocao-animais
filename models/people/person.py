@@ -15,25 +15,36 @@ class Person(ABC):
         self.name = name
         self.age = age
 
+    # -------------------------- PROPERTIES --------------------------
+
+    # ---- ID ----
     @property
     def id(self) -> str:
         return self._id
 
+    # ---- Name ----
     @property
     def name(self) -> str:
         return self._name
 
     @name.setter
-    def set_name(self, v: str) -> None:
+    def name(self, v: str) -> None:
+        if not v.strip() or not isinstance(v, str):
+            raise ValueError("name deve ser uma string não vazia.")
         self._name = v
 
+    # ---- Age ----
     @property
     def age(self) -> int:
         return self._age
 
     @age.setter
-    def set_age(self, v: int) -> None:
-        self._age = v
+    def age(self, v: int) -> None:
 
-    def validate_age(self) -> bool:
-        pass
+        if not isinstance(v, int):
+            raise TypeError("age deve ser do tipo int.")
+        
+        if not (0 < v < 120):
+            raise ValueError("Idade fora do intervalo permitido.")
+        
+        self._age = v

@@ -22,7 +22,7 @@ class Animal(ABC):
         gender (Gender): Gênero do animal.
         age_months (int): Idade do animal em meses.
         size (Size): Porte do animal (pequeno, médio, grande).
-        temperament (list) Temperamento do animal.
+        temperament (list[str]): Lista de características temperamentais.
         status (AnimalStatus): Estado atual do animal no sistema.
     """
     def __init__(
@@ -33,7 +33,7 @@ class Animal(ABC):
         gender: Gender,
         age_months: int,
         size: Size,
-        temperament: list,
+        temperament: list[str] | None,
         status: AnimalStatus = AnimalStatus.AVAILABLE,
     ):
         self._id = uuid.uuid4().hex
@@ -46,22 +46,101 @@ class Animal(ABC):
         self.temperament = temperament or []
         self.status = status
 
+    # -------------------------- PROPERTIES --------------------------
+
+    # ---- ID ----
     @property
     def id(self) -> str:
         return self._id
 
+    # ---- Species ----
+    @property
+    def species(self) -> str:
+        return self._species
+
+    @species.setter
+    def species(self, v: str) -> None:
+        if not v.strip() or not isinstance(v, str):
+            raise ValueError("species deve ser uma string não vazia.")
+        self._species = v
+
+    # ---- Breed ----
+    @property
+    def breed(self) -> str:
+        return self._breed
+
+    @breed.setter
+    def breed(self, v: str) -> None:
+        if not v.strip() or not isinstance(v, str):
+            raise ValueError("breed deve ser uma string não vazia.")
+        self._breed = v
+
+    # ---- Name ----
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, v: str) -> None:
+        if not v.strip() or not isinstance(v, str):
+            raise ValueError("name deve ser uma string não vazia.")
+        self._name = v
+
+    # ---- Gender ----
+    @property
+    def gender(self) -> Gender:
+        return self._gender
+
+    @gender.setter
+    def gender(self, v: Gender) -> None:
+        if not isinstance(v, Gender):
+            raise TypeError("gender deve ser um item do enum Gender.")
+        self._gender = v
+
+    # ---- Age (months) ----
     @property
     def age_months(self) -> int:
         return self._age_months
 
     @age_months.setter
-    def set_age_months(self, v: int) -> None:
+    def age_months(self, v: int) -> None:
+        if not isinstance(v, int):
+            raise TypeError("age_months deve ser int.")
+        if v < 0:
+            raise ValueError("age_months não pode ser negativo.")
         self._age_months = v
 
+    # ---- Size ----
     @property
     def size(self) -> Size:
         return self._size
 
     @size.setter
-    def set_size(self, v: Size) -> None:
+    def size(self, v: Size) -> None:
+        if not isinstance(v, Size):
+            raise TypeError("size deve ser um item do enum Size.")
         self._size = v
+
+    # ---- Temperament ----
+    @property
+    def temperament(self) -> list[str]:
+        return self._temperament
+
+    @temperament.setter
+    def temperament(self, v: list[str]) -> None:
+        if not isinstance(v, list):
+            raise TypeError("temperament deve ser uma lista.")
+        if not all(isinstance(item, str) for item in v):
+            raise TypeError("temperament deve conter apenas strings.")
+        self._temperament = v
+
+    # ---- Status ----
+    @property
+    def status(self) -> AnimalStatus:
+        return self._status
+
+    @status.setter
+    def status(self, v: AnimalStatus) -> None:
+        if not isinstance(v, AnimalStatus):
+            raise TypeError("status deve ser um item do enum AnimalStatus.")
+        self._status = v
