@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from person import Person
+from domain.people.person import Person
 
 class HousingType(Enum):
     HOUSE = auto()
@@ -20,6 +20,7 @@ class Adopter(Person):
 
     def __init__(
         self,
+        id: int,
         name: str,
         age: int,
         housing_type: HousingType,
@@ -28,12 +29,12 @@ class Adopter(Person):
         has_children_at_home: bool = False,
         has_other_animals: bool = False
     ):
-        super().__init__(name=name, age=age)
+        super().__init__(id=id, name=name, age=age)
 
         self.housing_type = housing_type
         self.usable_area = usable_area
         self.has_pet_experience = has_pet_experience
-        self.has_childre_at_home = has_children_at_home
+        self.has_children_at_home = has_children_at_home
         self.has_other_animals = has_other_animals
 
     def compatibility_rate(self) -> float:
@@ -46,6 +47,44 @@ class Adopter(Person):
         pass
         
     # -------------------------- PROPERTIES --------------------------
+
+   # ---- ID ----
+    @property
+    def id(self) -> int:
+        return self.__id
+    
+    @id.setter
+    def id(self, v: int) -> None:
+        if v is not None and not isinstance(v, int):
+            raise TypeError("id deve ser um int ou None.")
+        self.__id = v
+
+    # ---- Name ----
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    @name.setter
+    def name(self, v: str) -> None:
+        if not v.strip() or not isinstance(v, str):
+            raise ValueError("name deve ser uma string não vazia.")
+        self.__name = v
+
+    # ---- Age ----
+    @property
+    def age(self) -> int:
+        return self.__age
+
+    @age.setter
+    def age(self, v: int) -> None:
+
+        if not isinstance(v, int):
+            raise TypeError("age deve ser do tipo int.")
+        
+        if not (0 < v < 120):
+            raise ValueError("Idade fora do intervalo permitido.")
+        
+        self.__age = v
 
     # ---- Housing Type ----
     @property

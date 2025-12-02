@@ -1,5 +1,4 @@
 from abc import ABC
-import uuid
 
 class Person(ABC):
     """Classe base abstrata para representar pessoas do sistema.
@@ -10,8 +9,8 @@ class Person(ABC):
         age (int): Idade da pessoa.
     """
 
-    def __init__(self, name: str, age: int) -> None:
-        self._id = uuid.uuid4().hex
+    def __init__(self, id: int, name: str, age: int) -> None:
+        self.id = id
         self.name = name
         self.age = age
 
@@ -19,7 +18,7 @@ class Person(ABC):
 
     # ---- ID ----
     @property
-    def id(self) -> str:
+    def id(self) -> int:
         return self._id
 
     # ---- Name ----

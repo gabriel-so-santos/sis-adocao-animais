@@ -1,8 +1,4 @@
-import uuid
 from datetime import datetime
-from models.animals.cat import Cat
-from models.animals.dog import Dog
-from models.people.adopter import Adopter
 
 class Adoption:
     """Representa o registro de uma adoção.
@@ -14,56 +10,46 @@ class Adoption:
         animal (Cat | Dog): Animal adotado.
         adopter (Adopter): Pessoa que realizou a adoção.
         fee (float): Taxa cobrada pela adoção.
-        adoption_date (datetime): Data e hora da adoção.
+        created_at (datetime): Data e hora da adoção.
     """
-    def __init__(self, animal: Cat | Dog, adopter: Adopter, fee: float):
-        self._id = uuid.uuid4().hex
-        self.animal = animal
-        self.adopter = adopter
+    def __init__(
+        self, id: int,
+        animal_id: int,
+        adopter_id: int,
+        fee: float,
+        created_at
+        ):
+        self.__id = id
+        self.animal_id = animal_id
+        self.adopter_id = adopter_id
         self.fee = fee
-        self._adoption_date = datetime.now()
+        self.__created_at = created_at
 
     # -------------------------- PROPERTIES --------------------------
 
     # ---- ID ----
     @property
     def id(self) -> str:
-        return self._id
-
-    # ---- Animal ----
-    @property
-    def animal(self) -> Cat | Dog:
-        return self._animal
-
-    @animal.setter
-    def animal(self, v: Cat | Dog) -> None:
-        if not isinstance(v, (Cat, Dog)):
-            raise TypeError("animal deve ser instância de Cat ou Dog.")
-        self._animal = v
-
-    # ---- Adopter ----
-    @property
-    def adopter(self) -> Adopter:
-        return self._adopter
-
-    @adopter.setter
-    def adopter(self, v: Adopter) -> None:
-        if not isinstance(v, Adopter):
-            raise TypeError("adopter deve ser instância de Adopter.")
-        self._adopter = v
-
+        return self.__id
+    
     # ---- Fee ----
     @property
     def fee(self) -> float:
-        return self._fee
+        return self.__fee
 
     @fee.setter
     def fee(self, v: float) -> None:
         if v < 0:
             raise ValueError("fee não pode ser negativa.")
-        self._fee = v
+        self.__fee = v
 
     # ---- Date ----
     @property
-    def adoption_date(self) -> datetime:
-        return self._adoption_date
+    def created_at(self) -> datetime:
+        return self.__created_at
+    
+    @created_at.setter
+    def created_at(self, v) -> None:
+        if not isinstance(v, datetime):
+            raise TypeError("created_at deve ser do tipo datetime.")
+        self.__created_at = v

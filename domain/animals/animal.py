@@ -1,6 +1,6 @@
 from abc import ABC
-import uuid
-from animal_status import *
+from enum import Enum, auto
+from domain.animals.animal_status import AnimalStatus
 
 class Gender(Enum):
     MALE = auto()
@@ -27,6 +27,7 @@ class Animal(ABC):
     """
     def __init__(
         self,
+        id: int,
         species: str,
         breed: str,
         name: str,
@@ -36,7 +37,7 @@ class Animal(ABC):
         temperament: list[str] | None,
         status: AnimalStatus = AnimalStatus.AVAILABLE,
     ):
-        self._id = uuid.uuid4().hex
+        self._id = id
         self.species = species
         self.breed = breed
         self.name = name
