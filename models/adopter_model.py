@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy.orm import relationship
-from models.base_repo import Base
+from models.base_model import Base
 
 class AdopterModel(Base):
     __tablename__ = "adopters"
