@@ -1,15 +1,15 @@
 from abc import ABC
-from enum import Enum, auto
+from enum import Enum
 from domain.animals.animal_status import AnimalStatus
 
 class Gender(Enum):
-    MALE = auto()
-    FEMALE = auto()
+    MALE = "MALE"
+    FEMALE = "FEMALE"
 
 class Size(Enum):
-    SMALL = auto()
-    MEDIUM = auto()
-    LARGE = auto()
+    SMALL = "SMALL"
+    MEDIUM = "MEDIUM"
+    LARGE = "LARGE"
 
 class Animal(ABC):
     """Classe abstrata que representa um animal registrado no sistema.

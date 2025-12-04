@@ -11,12 +11,12 @@ class AnimalStatus(Enum):
         QUARANTINE: Animal em quarentena por saúde ou comportamento.
         UNADOPTABLE: Animal não pode ser adotado.
     """
-    AVAILABLE = auto()
-    RESERVED = auto()
-    ADOPTED = auto()
-    RETURNED = auto()
-    QUARANTINE = auto()
-    UNADOPTABLE = auto()
+    AVAILABLE = "AVAILABLE"
+    RESERVED = "RESERVED"
+    ADOPTED = "ADOPTED"
+    RETURNED = "RETURNED"
+    QUARANTINE = "QUARANTINE"
+    UNADOPTABLE = "UNADOPTABLE"
 
     @staticmethod
     def is_valid_transition(current_status: 'AnimalStatus', new_status: 'AnimalStatus') -> bool:

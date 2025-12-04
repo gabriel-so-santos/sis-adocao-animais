@@ -2,8 +2,8 @@ from enum import Enum, auto
 from domain.people.person import Person
 
 class HousingType(Enum):
-    HOUSE = auto()
-    APARTMENT = auto()
+    HOUSE = "HOUSE"
+    APARTMENT = "APARTMENT"
 
 class Adopter(Person):
     """Representa um adotante de animais no sistema.
