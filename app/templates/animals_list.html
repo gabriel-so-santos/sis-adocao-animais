@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Animais Cadastrados</title>
+{% endblock %}
+
+{% block body %}
+<div class="list-container">
+
+    <h1 class="list-title"><i class="fa-solid fa-paw"></i> Animais Cadastrados</h1>
+
+    {% if animals|length == 0 %}
+        <p class="empty-message">Não há animais cadastrados no momento.</p>
+
+    {% else %}
+        <div class="list-grid">
+
+            {% for animal in animals %}
+                <div class="list-card">
+
+                    <h3 class="animal-name">
+                        {% if animal.species.name == "CAT"%}
+                            <i class="fa-solid fa-cat"></i> {{ animal.name }}
+                        {% else %}
+                            <i class="fa-solid fa-dog"></i> {{ animal.name }}
+                        {% endif %}
+                    </h3>
+
+                    <p class="animal-info">
+                        Espécie: {{ animal.species_format() }}<br>
+                        Raça: {{ animal.breed }}<br>
+                        Sexo: {{ animal.gender_format() }}<br>
+                        Idade: {{ animal.age_months }} meses<br>
+                        Porte: {{ animal.size_format() }}<br>
+                        Status: {{ animal.status_format() }}<br>
+                        Temperamento: {{ animal.temperament_format() }}
+                    </p>
+
+                    <a href="" class="list-button">
+                        <i class="fa-solid fa-pen"></i> Editar
+                    </a>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
