@@ -6,5 +6,42 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Hello world</h1>
+<div class="home-container">
+
+    <h1 class="home-title"><i class="fa-solid fa-shield-dog"></i> Sistema de Adoção de Animais</h1>
+
+    <p class="home-subtitle">
+        Bem-vindo ao sistema! Escolha uma das opções abaixo para começar.
+    </p>
+
+    <div class="card-grid">
+
+        <!-- Row 1 -->
+        <div class="home-card">
+            <h3><i class="fa-solid fa-dog"></i> Cadastrar <br> Animal</h3>
+            <p>Adicione um novo animal ao sistema para adoção.</p>
+            <a href="{{ url_for('animal_registration') }}" class="home-button">Cadastrar</a>
+        </div>
+
+        <div class="home-card">
+            <h3><i class="fa-solid fa-user-plus"></i> Cadastrar <br> Adotante</h3>
+            <p>Registre um novo adotante interessado em adotar.</p>
+            <a href="{{ url_for('adopter_registration') }}" class="home-button">Cadastrar</a>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="home-card">
+            <h3><i class="fa-solid fa-paw"></i> Animais Cadastrados</h3>
+            <p>Veja todos os animais disponíveis para adoção.</p>
+            <a href="{{ url_for('animals_list') }}" class="home-button">Ver Lista</a>
+        </div>
+
+        <div class="home-card">
+            <h3><i class="fa-solid fa-users"></i> Adotantes Cadastrados</h3>
+            <p>Veja todos os adotantes registrados.</p>
+            <a href="{{ url_for('adopters_list') }}" class="home-button">Ver Lista</a>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
