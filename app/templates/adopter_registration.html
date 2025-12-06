@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Cadastrar Adotante</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <h1>Cadastrar Novo Adotante</h1>
+
+    <form action="{{ url_for('save_adopter') }}" method="POST" class="form">
+
+        <!-- Nome -->
+        <label for="name">Nome completo:</label>
+        <input type="text" id="name" name="name" required>
+
+        <!-- Idade -->
+        <label for="age">Idade:</label>
+        <input type="number" id="age" name="age" min="0" required>
+
+        <!-- Tipo de moradia -->
+        <label for="housing_type">Tipo de moradia:</label>
+        <select id="housing_type" name="housing_type" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="house">Casa</option>
+            <option value="apartment">Apartamento</option>
+        </select>
+
+        <!-- Área útil -->
+        <label for="usable_area">Área disponível (m²):</label>
+        <input type="number" id="usable_area" name="usable_area" step="0.1" min="0" required>
+
+        <!-- Experiência com pets -->
+        <label for="has_pet_experience">Já teve outros pets?</label>
+        <select id="has_pet_experience" name="has_pet_experience">
+            <option value="" disabled selected>Selecione</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+        </select>
+
+        <!-- Crianças em casa -->
+        <label for="has_children_at_home">Possui crianças na residência?</label>
+        <select id="has_children_at_home" name="has_children_at_home">
+            <option value="" disabled selected>Selecione</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+        </select>
+
+        <!-- Outros animais -->
+        <label for="has_other_animals">Possui outros animais?</label>
+        <select id="has_other_animals" name="has_other_animals">
+            <option value="" disabled selected>Selecione</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+        </select>
+
+        <!-- Botão -->
+        <button type="submit" class="submit-buttom">Cadastrar Adotante</button>
+
+    </form>
+</div>
+{% endblock %}

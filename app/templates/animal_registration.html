@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Cadastrar Animal</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1>Cadastrar Novo Animal</h1>
+
+    <form action="{{ url_for('save_animal') }}" method="POST" class="form">
+
+        <!-- Nome -->
+        <label for="name">Nome do Animal:</label>
+        <input type="text" id="name" name="name" required>
+
+        <!-- Espécie -->
+        <label for="species">Espécie:</label>
+        <select id="species" name="species" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="dog">Cachorro</option>
+            <option value="cat">Gato</option>
+        </select>
+
+        <!-- Raça -->
+        <label for="breed">Raça:</label>
+        <input type="text" id="breed" name="breed" required>
+
+        <!-- Sexo -->
+        <label for="gender">Sexo:</label>
+        <select id="gender" name="gender" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="male">Macho</option>
+            <option value="female">Fêmea</option>
+        </select>
+
+        <!-- Idade -->
+        <label for="age_months">Idade (meses):</label>
+        <input type="number" id="age_months" name="age_months" min="0" required>
+
+        <!-- Porte -->
+        <label for="size">Porte:</label>
+        <select id="size" name="size" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="small">Pequeno</option>
+            <option value="medium">Médio</option>
+            <option value="large">Grande</option>
+        </select>
+
+        <!-- Temperamento -->
+        <label for="temperament">Temperamento:</label>
+        <input type="text" id="temperament" name="temperament" placeholder="Ex.: dócil, agitado, medroso">
+        <p class="hint">Separe múltiplos valores com vírgulas.</p>
+
+        <!-- Status -->
+        <label for="status">Status inicial:</label>
+        <select id="status" name="status">
+            <option value="" disabled selected>Selecione</option>
+            <option value="available">Disponível</option>
+            <option value="quarantine">Quarentena</option>
+            <option value="unadoptable">Inadotável</option>
+        </select>
+
+        <!-- Botão -->
+        <button type="submit" class="submit-buttom">Cadastrar Animal</button>
+        
+    </form>
+</div>
+{% endblock %}

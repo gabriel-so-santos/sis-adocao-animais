@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Adotantes Cadastrados</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="page-title">Adotantes Cadastrados</h1>
+
+    {% if adopters|length == 0 %}
+        <h3 class="empty-message">Não há adotantes cadastrados no momento.</h3>
+        
+    {% else %}
+        <div class="cards-container">
+
+            {% for adopter in adopters %}
+                <div class="card adopters-card">
+
+                    <h2 class="adopter-name">
+                        <i class="fa-solid fa-user"></i>
+                        {{ adopter.name }}
+                    </h2>
+
+                    <p><strong>Idade:</strong> {{ adopter.age }} anos</p>
+
+                    <p><strong>Tipo de Moradia:</strong> 
+                        {{ adopter.housing_type_format() }}
+                    </p>
+
+                    <p><strong>Área Disponível:</strong> 
+                        {{ adopter.usable_area }} m²
+                    </p>
+
+                    <p><strong>Já teve pets?</strong>
+                        {{ adopter.has_pet_experience_format() }}
+                    </p>
+
+                    <p><strong>Possui rianças em casa?</strong>
+                        {{ adopter.has_children_at_home_format() }}
+                    </p>
+
+                    <p><strong>Possui outros animais?</strong>
+                        {{ adopter.has_other_animals_format() }}
+                    </p>
+
+                    <a href="" class="card-button">
+                        Editar Informações
+                    </a>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
