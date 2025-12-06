@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, JSON
 from sqlalchemy.orm import relationship
 from models.base_model import Base
 
@@ -14,5 +14,7 @@ class AnimalModel(Base):
     size = Column(String)
     temperament = Column(String)
     status = Column(String)
+
+    extra_data = Column(JSON, default={})
 
     adoptions = relationship("AdoptionModel", back_populates="animal")

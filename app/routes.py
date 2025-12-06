@@ -39,32 +39,34 @@ def save_animal():
         from domain.animals.cat import Cat
 
         animal = Cat(
-            id=None,
-            species=species,
-            breed=request.form["breed"],
-            name=request.form["name"],
-            gender=Gender[request.form["gender"].upper()],
-            age_months=int(request.form["age_months"]),
-            size=Size[request.form["size"].upper()],
-            temperament=[t.strip() for t in request.form["temperament"].split(",") if t.strip()],
-            status=AnimalStatus[request.form["status"].upper()],
-            #independence=True 
+            id = None,
+            species = species,
+            breed = request.form["breed"],
+            name = request.form["name"],
+            gender = Gender[request.form["gender"].upper()],
+            age_months = int(request.form["age_months"]),
+            size = Size[request.form["size"].upper()],
+            temperament = [t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            status = AnimalStatus[request.form["status"].upper()],
+
+            is_hypoallergenic = request.form.get("is_hypoallergenic", "false") == "true"
         )
 
     else:
         from domain.animals.dog import Dog
-        
+
         animal = Dog(
-            id=None,
-            species=species,
-            breed=request.form["breed"],
-            name=request.form["name"],
-            gender=Gender[request.form["gender"].upper()],
-            age_months=int(request.form["age_months"]),
-            size=Size[request.form["size"].upper()],
-            temperament=[t.strip() for t in request.form["temperament"].split(",") if t.strip()],
-            status=AnimalStatus[request.form["status"].upper()],
-            #needs_walk=True  
+            id = None,
+            species = species,
+            breed = request.form["breed"],
+            name = request.form["name"],
+            gender = Gender[request.form["gender"].upper()],
+            age_months = int(request.form["age_months"]),
+            size = Size[request.form["size"].upper()],
+            temperament = [t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            status = AnimalStatus[request.form["status"].upper()],
+            
+            needs_walk = request.form.get("needs_walk", "false") == "true"
         )
 
     animal_repo.save(animal)

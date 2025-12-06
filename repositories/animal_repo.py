@@ -14,9 +14,9 @@ class AnimalRepository:
         from domain.animals.animal_status import AnimalStatus
         
         species = Species[animal_model.species]
+        extra_data = animal_model.extra_data or {}
 
-        if species == Species.CAT:
-            
+        if species == Species.CAT:   
             animal = Cat(
                 id=animal_model.id,
                 species=species,
@@ -27,10 +27,10 @@ class AnimalRepository:
                 size=Size[animal_model.size],
                 temperament=json.loads(animal_model.temperament),
                 status=AnimalStatus[animal_model.status],
+                is_hypoallergenic=extra_data.get("is_hypoallergenic", False)
             )
 
         else:
-            
             animal = Dog(
                 id=animal_model.id,
                 species=species,
@@ -41,24 +41,35 @@ class AnimalRepository:
                 size=Size[animal_model.size],
                 temperament=json.loads(animal_model.temperament),
                 status=AnimalStatus[animal_model.status],
+                needs_walk=extra_data.get("needs_walk", False)
             )
 
         return animal
 
     # ---- Create ----
-    def save(self, animal) -> AnimalModel:
+    def save(self, animal: Cat | Dog) -> AnimalModel:
         """Salva uma entidade Animal no banco"""
+
+        extra_data = {}
+
+        if isinstance(animal, Dog):
+            extra_data["needs_walk"] = animal.needs_walk
+
+        if isinstance(animal, Cat):
+            extra_data["is_hypoallergenic"] = animal.is_hypoallergenic
+
 
         animal_db = AnimalModel(
             id=animal.id, 
-            species=animal.species.name,  # Enum -> str
+            species=animal.species.name,        # Enum -> str
             breed=animal.breed,
             name=animal.name,
-            gender=animal.gender.name,    # Enum -> str
+            gender=animal.gender.name,          # Enum -> str
             age_months=animal.age_months,
-            size=animal.size.name,        # Enum -> str
+            size=animal.size.name,              #Enum -> str
             temperament=json.dumps(animal.temperament),
-            status=animal.status.name,    # Enum -> str
+            status=animal.status.name,          # Enum -> str
+            extra_data=extra_data
         )
 
         self.session.add(animal_db)

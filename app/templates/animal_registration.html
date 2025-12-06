@@ -8,7 +8,7 @@
 {% block body %}
 <div class="container">
 
-    <h1>Cadastrar Novo Animal</h1>
+    <h1><i class="fa-solid fa-circle-plus"></i> Cadastrar Novo Animal</h1>
 
     <form action="{{ url_for('save_animal') }}" method="POST" class="form">
 
@@ -57,15 +57,53 @@
         <!-- Status -->
         <label for="status">Status inicial:</label>
         <select id="status" name="status">
-            <option value="" disabled selected>Selecione</option>
-            <option value="available">Disponível</option>
+            <option value="available" selected>Disponível</option>
             <option value="quarantine">Quarentena</option>
             <option value="unadoptable">Inadotável</option>
         </select>
+
+        <!-- Espcífico para gatos -->
+        <div id="cat_fields" style="display: none;" class="species-section hidden">
+
+            <h3 class="species-title"><i class="fa-solid fa-cat"></i> Campo para Gatos</h3>
+
+            <label for="is_hypoallergenic">É hipoalergênico?</label>
+            <select id="is_hypoallergenic" name="is_hypoallergenic">
+                <option value="" disabled selected>Selecione</option>
+                <option value="true">Sim</option> 
+                <option value="false">Não</option>
+            </select>
+
+        </div>
+
+        <!-- Espcífico para cães -->
+        <div id="dog_fields" style="display: none;" class="species-section hidden">
+
+            <h3 class="species-title"><i class="fa-solid fa-dog"></i> Campo para Cães</h3>
+
+            <label for="needs_walk">Precisa de Passeio?</label>
+            <select id="needs_walk" name="needs_walk">
+                <option value="" disabled selected>Selecione</option>
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+            </select>
+
+        </div>
 
         <!-- Botão -->
         <button type="submit" class="submit-buttom">Cadastrar Animal</button>
         
     </form>
 </div>
+<script>
+document.getElementById("species").addEventListener("change", function() {
+    const species = this.value;
+
+    document.getElementById("dog_fields").style.display =
+        species === "dog" ? "block" : "none";
+
+    document.getElementById("cat_fields").style.display =
+        species === "cat" ? "block" : "none";
+});
+</script>
 {% endblock %}

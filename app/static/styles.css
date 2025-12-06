@@ -166,6 +166,27 @@ select:invalid {
     color: #555;
 }
 
+/* ===== Species Sections (Cat/Dog) ===== */
+.species-section {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    animation: fadeSlide 0.3s ease;
+}
+
+/* Hidden state (for species switching) */
+.hidden {
+    display: none;
+}
+
+.species-title {
+    color: #f0c27b;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
 /* ---- Submit Button ---- */
 .submit-buttom {
     background: linear-gradient(135deg, #f0c27b, #e28f2a);
@@ -185,11 +206,22 @@ select:invalid {
     transform: scale(1.03);
 }
 
-/* ---- Animation ---- */
+/* ---- Animations ---- */
 @keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
     }
     to {
         opacity: 1;

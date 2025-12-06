@@ -20,11 +20,7 @@
                 <div class="list-card">
 
                     <h3 class="animal-name">
-                        {% if animal.species.name == "CAT"%}
-                            <i class="fa-solid fa-cat"></i> {{ animal.name }}
-                        {% else %}
-                            <i class="fa-solid fa-dog"></i> {{ animal.name }}
-                        {% endif %}
+                        <i class="{{ animal.html_icon }}"></i> {{ animal.name }}
                     </h3>
 
                     <p class="animal-info">
@@ -34,7 +30,9 @@
                         Idade: {{ animal.age_months }} meses<br>
                         Porte: {{ animal.size_format() }}<br>
                         Status: {{ animal.status_format() }}<br>
-                        Temperamento: {{ animal.temperament_format() }}
+                        Temperamento: {{ animal.temperament_format() }}<br>
+
+                        {{ animal.extra_info() }}
                     </p>
 
                     <a href="" class="list-button">
