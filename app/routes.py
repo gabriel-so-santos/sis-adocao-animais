@@ -33,18 +33,39 @@ def animal_registration():
 @app.route("/animals/save", methods=["GET", "POST"])
 def save_animal():
 
-    animal = Animal(
-        id = None,
-        species = Species[request.form["species"].upper()],
-        breed = request.form["breed"],
-        name = request.form["name"],
-        gender = Gender[request.form["gender"].upper()],
-        age_months = int(request.form["age_months"]),
-        size = Size[request.form["size"].upper()],
-        # Converte os valores recebibos em lista semparando-os por vígula
-        temperament = [t.strip() for t in request.form["temperament"].split(",") if t.strip()],
-        status = AnimalStatus[request.form["status"].upper()]
-    )
+    species = Species[request.form["species"].upper()]
+
+    if species == Species.CAT:
+        from domain.animals.cat import Cat
+
+        animal = Cat(
+            id=None,
+            species=species,
+            breed=request.form["breed"],
+            name=request.form["name"],
+            gender=Gender[request.form["gender"].upper()],
+            age_months=int(request.form["age_months"]),
+            size=Size[request.form["size"].upper()],
+            temperament=[t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            status=AnimalStatus[request.form["status"].upper()],
+            #independence=True 
+        )
+
+    else:
+        from domain.animals.dog import Dog
+        
+        animal = Dog(
+            id=None,
+            species=species,
+            breed=request.form["breed"],
+            name=request.form["name"],
+            gender=Gender[request.form["gender"].upper()],
+            age_months=int(request.form["age_months"]),
+            size=Size[request.form["size"].upper()],
+            temperament=[t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            status=AnimalStatus[request.form["status"].upper()],
+            #needs_walk=True  
+        )
 
     animal_repo.save(animal)
     return redirect(url_for("homepage"))

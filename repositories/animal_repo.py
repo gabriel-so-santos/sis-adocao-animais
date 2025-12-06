@@ -1,26 +1,49 @@
 from models.animal_model import AnimalModel
 import json
 
+from domain.animals.cat import Cat
+from domain.animals.dog import Dog
+
 class AnimalRepository:
     def __init__(self, session):
         self.session = session
 
-    def to_domain(self, animal_model: AnimalModel):
-        """Converte o Model (SQL) em uma entidade de domínio"""
-        from domain.animals.animal import Animal, Species, Gender, Size
+    def to_domain(self, animal_model: AnimalModel) -> Cat | Dog:
+        """Converte o Model (SQL) em entidades de domínio"""
+        from domain.animals.animal import Species, Gender, Size
         from domain.animals.animal_status import AnimalStatus
         
-        return Animal(
-            id=animal_model.id,
-            species=Species[animal_model.species],
-            breed=animal_model.breed,
-            name=animal_model.name,
-            gender=Gender[animal_model.gender], 
-            age_months=animal_model.age_months,
-            size=Size[animal_model.size],       
-            temperament=json.loads(animal_model.temperament),
-            status=AnimalStatus[animal_model.status] 
-        )
+        species = Species[animal_model.species]
+
+        if species == Species.CAT:
+            
+            animal = Cat(
+                id=animal_model.id,
+                species=species,
+                breed=animal_model.breed,
+                name=animal_model.name,
+                gender=Gender[animal_model.gender],
+                age_months=animal_model.age_months,
+                size=Size[animal_model.size],
+                temperament=json.loads(animal_model.temperament),
+                status=AnimalStatus[animal_model.status],
+            )
+
+        else:
+            
+            animal = Dog(
+                id=animal_model.id,
+                species=species,
+                breed=animal_model.breed,
+                name=animal_model.name,
+                gender=Gender[animal_model.gender],
+                age_months=animal_model.age_months,
+                size=Size[animal_model.size],
+                temperament=json.loads(animal_model.temperament),
+                status=AnimalStatus[animal_model.status],
+            )
+
+        return animal
 
     # ---- Create ----
     def save(self, animal) -> AnimalModel:
@@ -53,7 +76,7 @@ class AnimalRepository:
         return self.session.get(AnimalModel, id)
 
     # ---- Update ----
-    def update(self, animal) -> AnimalModel|None:
+    def update(self, animal) -> AnimalModel | None:
         """Atualiza um registro existente no banco a partir de um objeto de domínio"""
         animal_db = self.session.get(AnimalModel, animal.id)
 
