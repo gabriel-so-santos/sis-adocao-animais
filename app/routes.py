@@ -4,9 +4,14 @@ from main import app, session
 from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
 from repositories.animal_repo import AnimalRepository
 
+from domain.people.adopter import Adopter, HousingType
+from repositories.adopter_repo import AdopterRepository
+
 @app.route("/")
 def homepage():
     return render_template("index.html")
+
+# -------------------------- ANIMALS --------------------------
 
 animal_repo = AnimalRepository(session)
 
@@ -42,4 +47,40 @@ def save_animal():
     )
 
     animal_repo.save(animal)
+    return redirect(url_for("homepage"))
+
+# -------------------------- ADOPTERS --------------------------
+
+adopter_repo = AdopterRepository(session)
+
+@app.route("/adopters", methods=["GET", "POST"])
+def adopters_list():
+    adopters_db = adopter_repo.list_all()
+    adopters = list()
+    
+    for adopter_db in adopters_db:
+        adopter = adopter_repo.to_domain(adopter_db)
+        adopters.append(adopter)
+
+    return render_template("adopters_list.html", adopters=adopters)
+
+@app.route("/adopters/new")
+def adopter_registration():
+    return render_template("adopter_registration.html")
+
+@app.route("/adopters/save", methods=["GET", "POST"])
+def save_adopter():
+
+    adopter = Adopter(
+        id = None,
+        name = request.form["name"],
+        age = int(request.form["age"]),
+        housing_type = HousingType[request.form["housing_type"].upper()],
+        usable_area = int(request.form["usable_area"]),
+        has_pet_experience = request.form["has_pet_experience"] == "true",
+        has_children_at_home = request.form["has_children_at_home"] == "true",
+        has_other_animals = request.form["has_other_animals"] == "true"
+    )
+
+    adopter_repo.save(adopter)
     return redirect(url_for("homepage"))
