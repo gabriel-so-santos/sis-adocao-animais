@@ -2,6 +2,10 @@ from abc import ABC
 from enum import Enum
 from domain.animals.animal_status import AnimalStatus
 
+class Species(Enum):
+    CAT = "CAT"
+    DOG = "DOG"
+
 class Gender(Enum):
     MALE = "MALE"
     FEMALE = "FEMALE"
@@ -28,7 +32,7 @@ class Animal(ABC):
     def __init__(
         self,
         id: int,
-        species: str,
+        species: Species,
         breed: str,
         name: str,
         gender: Gender,
@@ -39,14 +43,53 @@ class Animal(ABC):
     ):
         self._id = id
         self.species = species
-        self.breed = breed
-        self.name = name
+        self.breed = breed.capitalize()
+        self.name = name.capitalize()
         self.gender = gender
         self.age_months = age_months
         self.size = size
         self.temperament = temperament or []
         self.status = status
 
+    def species_format(self):
+        if self.gender == Gender.FEMALE:
+            return {
+                "CAT": "Gata",
+                "DOG": "Cadela",
+            }.get(self.species.name)
+        
+        else:
+            return {
+                "CAT": "Gato",
+                "DOG": "Cachorro",
+            }.get(self.species.name)
+    
+    def gender_format(self):
+        return {
+            "MALE": "Macho",
+            "FEMALE": "Fêmea",
+        }.get(self.gender.name)
+    
+    def size_format(self):
+        return {
+            "SMALL": "Pequeno",
+            "MEDIUM": "Médio",
+            "LARGE": "Grande"
+        }.get(self.size.name)
+    
+    def temperament_format(self):
+        return ", ".join(item.strip().capitalize() for item in self.temperament)
+    
+    def status_format(self):
+        return {
+            "AVAILABLE": "Disponível",
+            "RESERVED": "Reservado",
+            "ADOPTED": "Adotado",
+            "RETURNED": "Devolvido",
+            "QUARANTINE": "Em Quarentena",
+            "UNADOPTABLE": "Indisponível"
+        }.get(self.status.name)
+    
     # -------------------------- PROPERTIES --------------------------
 
     # ---- ID ----
@@ -56,13 +99,13 @@ class Animal(ABC):
 
     # ---- Species ----
     @property
-    def species(self) -> str:
+    def species(self) -> Species:
         return self._species
 
     @species.setter
     def species(self, v: str) -> None:
-        if not v.strip() or not isinstance(v, str):
-            raise ValueError("species deve ser uma string não vazia.")
+        if not isinstance(v, Species):
+            raise ValueError("species deve ser do tipo Species.")
         self._species = v
 
     # ---- Breed ----

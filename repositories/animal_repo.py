@@ -7,12 +7,12 @@ class AnimalRepository:
 
     def to_domain(self, animal_model: AnimalModel):
         """Converte o Model (SQL) em uma entidade de domínio"""
-        from domain.animals.animal import Animal, Gender, Size
+        from domain.animals.animal import Animal, Species, Gender, Size
         from domain.animals.animal_status import AnimalStatus
         
         return Animal(
             id=animal_model.id,
-            species=animal_model.species,
+            species=Species[animal_model.species],
             breed=animal_model.breed,
             name=animal_model.name,
             gender=Gender[animal_model.gender], 
@@ -28,7 +28,7 @@ class AnimalRepository:
 
         animal_db = AnimalModel(
             id=animal.id, 
-            species=animal.species,
+            species=animal.species.name,  # Enum -> str
             breed=animal.breed,
             name=animal.name,
             gender=animal.gender.name,    # Enum -> str
@@ -60,7 +60,7 @@ class AnimalRepository:
         if not animal_db:
             return None
 
-        animal_db.species = animal.species
+        animal_db.species = animal.species.name
         animal_db.breed = animal.breed
         animal_db.name = animal.name
         animal_db.gender = animal.gender.name

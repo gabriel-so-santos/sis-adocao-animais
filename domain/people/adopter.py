@@ -45,6 +45,21 @@ class Adopter(Person):
             float: Valor entre 0 e 100 representando o nível de compatibilidade.
         """
         pass
+
+    def has_pet_experience_format(self):
+        return "Sim" if self.has_pet_experience else "Não"
+
+    def has_children_at_home_format(self):
+        return "Sim" if self.has_children_at_home else "Não"
+
+    def has_other_animals_format(self):
+        return "Sim" if self.has_other_animals else "Não"
+
+    def housing_type_format(self):
+        return {
+            "HOUSE": "Casa",
+            "APARTMENT": "Apartamento"
+        }.get(self.housing_type.name)
         
     # -------------------------- PROPERTIES --------------------------
 
