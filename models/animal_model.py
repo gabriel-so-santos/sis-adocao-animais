@@ -17,4 +17,4 @@ class AnimalModel(Base):
 
     extra_data = Column(JSON, default={})
 
-    adoptions = relationship("AdoptionModel", back_populates="animal")
+    events = relationship("EventModel", back_populates="animal", cascade="all, delete")

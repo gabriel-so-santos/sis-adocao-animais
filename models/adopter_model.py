@@ -13,5 +13,3 @@ class AdopterModel(Base):
     has_pet_experience = Column(Boolean)
     has_children_at_home = Column(Boolean)
     has_other_animals = Column(Boolean)
-
-    adoptions = relationship("AdoptionModel", back_populates="adopter")

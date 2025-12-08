@@ -8,6 +8,6 @@ Session = sessionmaker(bind=engine)
 
 def init_db():
     """Cria todas as tabelas definidas pelos modelos ORM."""
-    from models import adopter_model, adoption_model, animal_model
+    from models import adopter_model, animal_model, event_model
     
     Base.metadata.create_all(bind=engine)
