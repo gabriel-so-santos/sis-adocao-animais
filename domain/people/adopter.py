@@ -1,5 +1,10 @@
 from enum import Enum, auto
 from domain.people.person import Person
+from domain.exeptions import PolicyNotMetError
+import json
+
+with open("settings.json", "r", encoding="utf-8") as f:
+    settings = json.load(f)
 
 class HousingType(Enum):
     HOUSE = "HOUSE"
@@ -63,28 +68,6 @@ class Adopter(Person):
         
     # -------------------------- PROPERTIES --------------------------
 
-   # ---- ID ----
-    @property
-    def id(self) -> int:
-        return self.__id
-    
-    @id.setter
-    def id(self, v: int) -> None:
-        if v is not None and not isinstance(v, int):
-            raise TypeError("id deve ser um int ou None.")
-        self.__id = v
-
-    # ---- Name ----
-    @property
-    def name(self) -> str:
-        return self.__name
-
-    @name.setter
-    def name(self, v: str) -> None:
-        if not v.strip() or not isinstance(v, str):
-            raise ValueError("name deve ser uma string não vazia.")
-        self.__name = v
-
     # ---- Age ----
     @property
     def age(self) -> int:
@@ -96,7 +79,11 @@ class Adopter(Person):
         if not isinstance(v, int):
             raise TypeError("age deve ser do tipo int.")
         
-        if not (0 < v < 120):
+        minimum_age =  settings["policies"]["minimum_adopter_age"]
+        if v < minimum_age:
+            raise PolicyNotMetError(f"A idade mínima para adotantes é {minimum_age} anos.")
+        
+        if not (0 <= v <= 128):
             raise ValueError("Idade fora do intervalo permitido.")
         
         self.__age = v

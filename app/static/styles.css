@@ -111,6 +111,47 @@ h1 {
 }
 
 /* =========================================================
+   ERROR PAGE
+========================================================= */
+.error-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 2rem;
+    background: #1d1d1d;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.error-title {
+    font-size: 1.8rem;
+    color: #e84a4a;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: #f0c27b;
+    margin-bottom: 25px;
+}
+
+.error-button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    background: none;                        
+    border: 2px solid #f0c27b;               
+    color: #f0c27b !important;      
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.error-button:hover {
+    transform: scale(1.05);
+    background: rgba(240, 194, 123, 0.1);    
+    box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
+}
+/* =========================================================
    REGISTRATION FORMS
 ========================================================= */
 

@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, request
 from main import app, session
+import json
 
 from domain.animals.animal import Species, Gender, Size, AnimalStatus
 from repositories.animal_repo import AnimalRepository
@@ -9,6 +10,9 @@ from repositories.adopter_repo import AdopterRepository
 
 from domain.events.events import EventType, ReservationEvent, AdoptionEvent
 from repositories.event_repo import EventRepository
+
+with open("settings.json", "r", encoding="utf-8") as f:
+    settings = json.load(f)
 
 @app.route("/")
 def homepage():
@@ -85,6 +89,7 @@ def animal_details(id):
 # -------------------------- ADOPTERS --------------------------
 
 adopter_repo = AdopterRepository(session)
+min_adopter_age = settings["policies"]["minimum_adopter_age"]
 
 @app.route("/adopters", methods=["GET", "POST"])
 def adopters_list():
@@ -99,24 +104,41 @@ def adopters_list():
 
 @app.route("/adopters/new")
 def adopter_registration():
-    return render_template("adopter_registration.html")
+    return render_template("adopter_registration.html", minimum_age=min_adopter_age)
 
 @app.route("/adopters/save", methods=["GET", "POST"])
 def save_adopter():
 
-    adopter = Adopter(
-        id = None,
-        name = request.form["name"],
-        age = int(request.form["age"]),
-        housing_type = HousingType[request.form["housing_type"].upper()],
-        usable_area = int(request.form["usable_area"]),
-        has_pet_experience = request.form["has_pet_experience"] == "true",
-        has_children_at_home = request.form["has_children_at_home"] == "true",
-        has_other_animals = request.form["has_other_animals"] == "true"
-    )
+    age = int(request.form["age"])
 
-    adopter_repo.save(adopter)
-    return redirect(url_for("homepage"))
+    if age < min_adopter_age:
+        return render_template(
+            "error.html",
+            err_msg=f"""
+                Você não cumpre as políticas para cadastro de adotantes.
+                A idade mínima para adotantes é {min_adopter_age}."""
+            )
+    
+    if age > 128:
+        return render_template(
+            "error.html",
+            err_msg="Idade fora do limite permitido."
+            )
+    
+    else:
+        adopter = Adopter(
+            id = None,
+            name = request.form["name"],
+            age = age,
+            housing_type = HousingType[request.form["housing_type"].upper()],
+            usable_area = int(request.form["usable_area"]),
+            has_pet_experience = request.form["has_pet_experience"] == "true",
+            has_children_at_home = request.form["has_children_at_home"] == "true",
+            has_other_animals = request.form["has_other_animals"] == "true"
+        )
+
+        adopter_repo.save(adopter)
+        return redirect(url_for("homepage"))
 
 # -------------------------- EVENTS --------------------------
 

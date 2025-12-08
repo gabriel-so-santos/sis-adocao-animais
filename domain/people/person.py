@@ -10,7 +10,7 @@ class Person(ABC):
     """
 
     def __init__(self, id: int, name: str, age: int) -> None:
-        self.id = id
+        self._id = id
         self.name = name
         self.age = age
 
@@ -43,7 +43,7 @@ class Person(ABC):
         if not isinstance(v, int):
             raise TypeError("age deve ser do tipo int.")
         
-        if not (0 < v < 120):
+        if not (0 <= v <= 128):
             raise ValueError("Idade fora do intervalo permitido.")
         
         self._age = v

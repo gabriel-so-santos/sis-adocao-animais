@@ -1,0 +1,45 @@
+{
+  "policies": {
+    "minimum_adopter_age": 18,
+    "large_pet_requirement": {
+      "minimum_area_m2": 60,
+      "required_housing": "house"
+    }
+  },
+
+  "reservations": {
+    "duration_hours": 48,
+    "confirm_adoption_time_hours": 24,
+    "one_reservation_per_pet": true
+  },
+
+  "compatibility": {
+    "weights": {
+      "housing_vs_size": 0.35,
+      "age_vs_energy": 0.25,
+      "experience": 0.25,
+      "children_factor": 0.15
+    }
+  },
+
+  "fees": {
+    "base_fee": 200.0, 
+    "senior": {
+      "age_limit_months": 84,
+      "discount_rate": 0.30
+    },
+    "puppy": {
+      "age_limit_months": 6,
+      "extra_vaccine_cost": 80.0
+    },
+    "special_care": {
+      "extra_treatment_cost": 120.0
+    },
+    "default_strategy": "BaseFeeStrategy"
+  },
+
+  "logging": {
+    "enable_notifications": true,
+    "log_file": "events.log"
+  }
+}

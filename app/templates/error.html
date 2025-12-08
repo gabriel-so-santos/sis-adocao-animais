@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Algo deu errado</title>
+{% endblock %}
+
+{% block body %}
+<body>
+    <div class="error-container">
+        <h1 class="error-title"><i class="fa-solid fa-triangle-exclamation"></i> Ocorreu um erro</h1>
+
+        <p class="error-message">
+            {{ err_msg }}
+        </p>
+
+        <a href="{{ url_for('homepage') }}" class="error-button">Voltar</a>
+    </div>
+</body>
+{% endblock %}

@@ -19,7 +19,7 @@
 
         <!-- Idade -->
         <label for="age">Idade:</label>
-        <input type="number" id="age" name="age" min="0" required>
+        <input type="number" id="age" name="age" min="{{ minimum_age }}" max=128 required>
 
         <!-- Tipo de moradia -->
         <label for="housing_type">Tipo de moradia:</label>
@@ -34,8 +34,8 @@
         <input type="number" id="usable_area" name="usable_area" step="0.1" min="0" required>
 
         <!-- Experiência com pets -->
-        <label for="has_pet_experience">Já teve outros pets?</label>
-        <select id="has_pet_experience" name="has_pet_experience">
+        <label for="has_pet_experience">Já teve experiência com outros pets?</label>
+        <select id="has_pet_experience" name="has_pet_experience" required>
             <option value="" disabled selected>Selecione</option>
             <option value="true">Sim</option>
             <option value="false">Não</option>
@@ -43,7 +43,7 @@
 
         <!-- Crianças em casa -->
         <label for="has_children_at_home">Possui crianças na residência?</label>
-        <select id="has_children_at_home" name="has_children_at_home">
+        <select id="has_children_at_home" name="has_children_at_home" required>
             <option value="" disabled selected>Selecione</option>
             <option value="true">Sim</option>
             <option value="false">Não</option>
@@ -51,7 +51,7 @@
 
         <!-- Outros animais -->
         <label for="has_other_animals">Possui outros animais?</label>
-        <select id="has_other_animals" name="has_other_animals">
+        <select id="has_other_animals" name="has_other_animals" required>
             <option value="" disabled selected>Selecione</option>
             <option value="true">Sim</option>
             <option value="false">Não</option>
