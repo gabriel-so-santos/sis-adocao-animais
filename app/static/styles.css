@@ -328,6 +328,9 @@ select:invalid {
 }
 
 .adopters-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
     background-color: #2b2b2b;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -345,16 +348,198 @@ select:invalid {
 }
 
 .card-button {
-    background-color: #444;
-    border-radius: 6px;
-    color: white;
-    display: inline-block;
-    margin-top: 15px;
-    padding: 8px 12px;
+    background: none;  
+    padding: 10px 16px;
+    margin-right: 10px;
+    border-radius: 10px;                      
+    border: 2px solid #f0c27b;               
+    color: #f0c27b !important;   
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;            
+}
+
+.card-button:hover {
+    transform: scale(1.05);
+    background: rgba(240, 194, 123, 0.1);    
+    box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
+}
+
+/* Details Page */
+.details-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.details-title {
+    text-align: center;
+    font-size: 2.2rem;
+    color: #f0c27b;
+    margin-bottom: 30px;
+}
+
+.details-card,
+.timeline-card {
+    background: #1d1d1d;
+    padding: 1.7rem;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    margin-bottom: 35px;
+}
+
+.section-title {
+    color: #f0c27b;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.details-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    margin: 20px 0;
+}
+
+.details-button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f0c27b, #e28f2a);
+    color: #121212 !important;
+    font-weight: bold;
     text-decoration: none;
     transition: 0.2s;
 }
 
-.card-button:hover {
-    background-color: #666;
+.details-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
+}
+
+.details-button.danger {
+    background: linear-gradient(135deg, #e84a4a, #b01919);
+    color: white;
+}
+
+.details-buttons-top,
+.details-buttons-bottom {
+    display: flex;
+    gap: 20px;          
+    justify-content: flex-start;
+}
+
+.details-button.outline {
+    background: none;                        
+    border: 2px solid #f0c27b;               
+    color: #f0c27b !important;               
+}
+
+.details-button.outline:hover {
+    transform: scale(1.05);
+    background: rgba(240, 194, 123, 0.1);    
+    box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
+}
+
+/* ====== Adoption Page Styling ====== */
+
+.readonly-box {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    padding: 12px;
+    border-radius: 8px;
+    color: #f0c27b;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.details-card form label {
+    font-weight: 600;
+    color: #e9e9e9;
+    margin-bottom: 6px;
+}
+
+.details-card form select,
+.details-card form input[type="text"],
+.details-card form input[type="number"] {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    padding: 12px;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 18px;
+}
+
+.details-card form select:focus,
+.details-card form input:focus {
+    border-color: #f0c27b;
+    box-shadow: 0 0 8px rgba(240, 194, 123, 0.5);
+    outline: none;
+}
+
+/* ====== Reservation Cards ====== */
+
+.reservation-card {
+    background: #1d1d1d;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    transition: 0.25s ease;
+}
+
+.reservation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 22px rgba(240, 194, 123, 0.3);
+}
+
+.reservation-title {
+    color: #f0c27b;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reservation-info {
+    color: #ccc;
+    line-height: 1.5rem;
+    margin-bottom: 18px;
+}
+
+.reservation-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.reservation-button {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.reservation-button.confirm {
+    background: linear-gradient(135deg, #8df07b, #38b32a);
+    color: #121212 !important;
+}
+
+.reservation-button.confirm:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(141, 240, 123, 0.7);
+}
+
+.reservation-button.cancel {
+    background: transparent;
+    border: 2px solid #e84a4a;
+    color: #e84a4a;
+}
+
+.reservation-button.cancel:hover {
+    background: rgba(232, 74, 74, 0.15);
+    transform: scale(1.05);
 }

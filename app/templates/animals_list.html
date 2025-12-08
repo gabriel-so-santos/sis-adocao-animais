@@ -35,8 +35,8 @@
                         {{ animal.extra_info() }}
                     </p>
 
-                    <a href="" class="list-button">
-                        <i class="fa-solid fa-pen"></i> Editar
+                    <a href="{{ url_for('animal_details', id=animal.id) }}" class="list-button">
+                        <i class="fa-solid fa-pen"></i> Ver Detalhes
                     </a>
 
                 </div>

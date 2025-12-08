@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Registrar Reseva</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+
+    <h1 class="details-title">Registrar Reserva</h1>
+
+    <div class="details-card">
+
+        <form action="{{ url_for('save_adoption_reservation') }}" method="POST" class="form">
+
+            <!-- ANIMAL -->
+            <label for="animal_id">Animal:</label>
+
+            {% if selected_animal %}
+                <input type="hidden" name="animal_id" value="{{ selected_animal.id }}">
+                <div class="readonly-box">
+                    {{ selected_animal.name }} - {{ selected_animal.species_format() }} - {{ selected_animal.breed }}
+                </div>
+            {% else %}
+                <select name="animal_id" id="animal_id" required>
+                    <option value="" disabled selected>Selecione um animal</option>
+                    {% for animal in animals %}
+                        <option value="{{ animal.id }}">
+                            {{ animal.name }} - {{ animal.species_format() }} - {{ animal.breed }}
+                        </option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            <!-- ADOPTER -->
+            <label for="adopter_id">Adotante:</label>
+
+            {% if selected_adopter %}
+                <input type="hidden" name="adopter_id" value="{{ selected_adopter.id }}">
+                <div class="readonly-box">
+                    {{ selected_adopter.name }}, {{ selected_adopter.age }} anos
+                </div>
+            {% else %}
+                <select name="adopter_id" id="adopter_id" required>
+                    <option value="" disabled selected>Selecione um adotante</option>
+                    {% for adopter in adopters %}
+                        <option value="{{ adopter.id }}">
+                            {{ adopter.name }}, {{ adopter.age }} anos
+                        </option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            <!-- BUTTON -->
+            <button type="submit" class="submit-buttom" style="margin-top: 25px;">
+                <i class="fa-solid fa-calendar-check"></i> Confirmar Reserva
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}

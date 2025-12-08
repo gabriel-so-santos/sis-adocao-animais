@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Detalhes do Animal - {{ animal.name }}</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="details-container">
+
+    <!-- Title -->
+    <h1 class="details-title">
+        <i class="{{ animal.html_icon }}"></i> Detalhes de {{ animal.name }}
+    </h1>
+
+    <!-- Animal Info Card -->
+    <div class="details-card">
+
+        <h2 class="section-title">Informações do Animal</h2>
+
+        <p><strong>Nome:</strong> {{ animal.name }}</p>
+        <p><strong>Espécie:</strong> {{ animal.species_format() }}</p>
+        <p><strong>Raça:</strong> {{ animal.breed }}</p>
+        <p><strong>Sexo:</strong> {{ animal.gender_format() }}</p>
+        <p><strong>Idade:</strong> {{ animal.age_months }} meses</p>
+        <p><strong>Porte:</strong> {{ animal.size_format() }}</p>
+        <p><strong>Temperamento:</strong> {{ animal.temperament_format() }}</p>
+        <p><strong>Status atual:</strong> {{ animal.status_format() }}</p>
+
+        {% if animal.species == "CAT" %}
+            <p><strong>Hipoalergênico:</strong> {{ animal.is_hypoallergenic_format() }}</p>
+        {% endif %}
+
+        {% if animal.species == "DOG" %}
+            <p><strong>Precisa de Passeio:</strong> {{ animal.needs_walk_format() }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Actions -->
+    <div class="details-actions">
+
+        <div class="details-buttons-top">
+            <a href="" class="details-button">
+                <i class="fa-solid fa-pen"></i> Editar Informações
+            </a>
+
+            {% if animal.status.name == "AVAILABLE" or animal.status.name == "RESERVED"  %}
+                <a href="{{ url_for('adoption_reservation', animal_id=animal.id) }}" class="details-button">
+                    <i class="fa-solid fa-heart-circle-plus"></i> Reservar Adoção
+                </a>
+            {% elif animal.status.name == "ADOPTED" %}
+                <a href="" class="details-button danger">
+                    <i class="fa-solid fa-arrows-turn-to-dots"></i> Registrar Devolução
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="details-buttons-bottom">
+            <a href="" class="details-button outline">
+                <i class="fa-solid fa-syringe"></i> Registrar Vacina
+            </a>
+
+            {% if animal.species.name == "DOG" %}
+                <a href="" class="details-button outline">
+                    <i class="fa-solid fa-bone"></i> Registrar Treinamento
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

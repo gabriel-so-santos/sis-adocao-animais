@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Resevas em Andamento</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+
+    <h1 class="details-title">Reservas de Adoção</h1>
+
+    {% if reservations|length == 0 %}
+        <p class="empty-message">Não há reservas de adoção no momento.</p>
+    {% else %}
+
+        <div class="cards-container">
+
+            {% for r in reservations %}
+                <div class="reservation-card">
+
+                    <h3 class="reservation-title">
+                        <i class="{{ r.animal.html_icon }}"></i>
+                        {{ r.animal.name }}
+                    </h3>
+
+                    <p class="reservation-info">
+                        <strong>Adotante:</strong> {{ r.adopter.name }}<br>
+                        <strong>Espécie:</strong> {{ r.animal.species_format() }}<br>
+                        <strong>Data da reserva:</strong> {{ r.date.strftime("%d/%m/%Y") }}
+                    </p>
+
+                    <div class="reservation-actions">
+                        <a href="" class="reservation-button confirm">
+                            <i class="fa-solid fa-check"></i> Confirmar Adoção
+                        </a>
+
+                        <a href="" class="reservation-button cancel">
+                            <i class="fa-solid fa-x"></i> Cancelar
+                        </a>
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

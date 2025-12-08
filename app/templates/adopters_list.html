@@ -45,10 +45,16 @@
                     <p><strong>Possui outros animais?</strong>
                         {{ adopter.has_other_animals_format() }}
                     </p>
+                    
+                    <div class="card-buttons">
+                        <a href="" class="card-button">
+                            <i class="fa-solid fa-user-pen"></i> Editar Informações
+                        </a>
 
-                    <a href="" class="card-button">
-                        Editar Informações
-                    </a>
+                        <a href="{{ url_for('adoption_reservation', adopter_id=adopter.id) }}" class="card-button">
+                            <i class="fa-solid fa-calendar-plus"></i> Registrar Reserva
+                        </a>
+                    </div>
 
                 </div>
             {% endfor %}
