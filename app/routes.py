@@ -1,11 +1,14 @@
 from flask import render_template, redirect, url_for, request
 from main import app, session
 
-from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
+from domain.animals.animal import Species, Gender, Size, AnimalStatus
 from repositories.animal_repo import AnimalRepository
 
 from domain.people.adopter import Adopter, HousingType
 from repositories.adopter_repo import AdopterRepository
+
+from domain.events.events import EventType, ReservationEvent, AdoptionEvent
+from repositories.event_repo import EventRepository
 
 @app.route("/")
 def homepage():
@@ -72,6 +75,13 @@ def save_animal():
     animal_repo.save(animal)
     return redirect(url_for("homepage"))
 
+@app.route("/animals/details/<id>", methods=["GET", "POST"])
+def animal_details(id):
+    animal_db = animal_repo.get_by_id(id)
+    animal = animal_repo.to_domain(animal_db)
+
+    return render_template("animal_details.html", animal=animal)
+
 # -------------------------- ADOPTERS --------------------------
 
 adopter_repo = AdopterRepository(session)
@@ -107,3 +117,80 @@ def save_adopter():
 
     adopter_repo.save(adopter)
     return redirect(url_for("homepage"))
+
+# -------------------------- EVENTS --------------------------
+
+event_repo = EventRepository(session)
+
+@app.route("/adoptions/reservations")
+def adoption_reservation_list():
+    reservations_db = event_repo.list_by_type(EventType.RESERVATION)
+    reservations = list()
+
+    for reservation_db in reservations_db:
+        reservation = event_repo.to_domain(reservation_db)
+        reservations.append(reservation)
+
+    reservations_full = list()
+    for r in reservations:
+        animal = animal_repo.to_domain(animal_repo.get_by_id(r.animal_id))
+        adopter = adopter_repo.to_domain(adopter_repo.get_by_id(r.adopter_id))
+
+        reservations_full.append({
+                "id": r.id,
+                "date": r.timestamp,
+                "animal": animal,
+                "adopter": adopter
+            })
+
+
+    return render_template("adoption_reservation_list.html", reservations=reservations_full)
+
+@app.route("/adoptions/reservations/new", methods=["GET", "POST"])
+def adoption_reservation():
+    animal_id = request.args.get("animal_id")
+    adopter_id = request.args.get("adopter_id")
+
+    animals = None
+    adopters = None
+    selected_animal = None
+    selected_adopter = None
+
+    # ANIMAL
+    if animal_id:
+        selected_animal_db = animal_repo.get_by_id(animal_id)
+        selected_animal = animal_repo.to_domain(selected_animal_db)
+    else:
+        animals_db = animal_repo.list_all()
+        animals = [animal_repo.to_domain(a) for a in animals_db]
+
+    # ADOPTER
+    if adopter_id:
+        selected_adopter_db = adopter_repo.get_by_id(adopter_id)
+        selected_adopter = adopter_repo.to_domain(selected_adopter_db)
+    else:
+        adopters_db = adopter_repo.list_all()
+        adopters = [adopter_repo.to_domain(a) for a in adopters_db]
+
+    return render_template(
+        "adoption_reservation.html",
+        animals=animals,
+        adopters=adopters,
+        selected_animal=selected_animal,
+        selected_adopter=selected_adopter,
+    )
+
+@app.route("/adoptions/reservations/save", methods=["GET", "POST"])
+def save_adoption_reservation():
+    animal_id = int(request.form.get("animal_id"))
+    adopter_id = int(request.form.get("adopter_id"))
+
+    reservation_event = ReservationEvent(
+        id=None,
+        animal_id=animal_id,
+        adopter_id=adopter_id,
+        timestamp=None,
+    )
+    event_repo.save(reservation_event)
+
+    return redirect(url_for("adoption_reservation_list"))
