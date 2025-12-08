@@ -16,25 +16,8 @@
 
     <!-- Animal Info Card -->
     <div class="details-card">
-
         <h2 class="section-title">Informações do Animal</h2>
-
-        <p><strong>Nome:</strong> {{ animal.name }}</p>
-        <p><strong>Espécie:</strong> {{ animal.species_format() }}</p>
-        <p><strong>Raça:</strong> {{ animal.breed }}</p>
-        <p><strong>Sexo:</strong> {{ animal.gender_format() }}</p>
-        <p><strong>Idade:</strong> {{ animal.age_months }} meses</p>
-        <p><strong>Porte:</strong> {{ animal.size_format() }}</p>
-        <p><strong>Temperamento:</strong> {{ animal.temperament_format() }}</p>
-        <p><strong>Status atual:</strong> {{ animal.status_format() }}</p>
-
-        {% if animal.species == "CAT" %}
-            <p><strong>Hipoalergênico:</strong> {{ animal.is_hypoallergenic_format() }}</p>
-        {% endif %}
-
-        {% if animal.species == "DOG" %}
-            <p><strong>Precisa de Passeio:</strong> {{ animal.needs_walk_format() }}</p>
-        {% endif %}
+        <pre>{{ animal }}</pre>
     </div>
 
     <!-- Actions -->
@@ -57,11 +40,13 @@
         </div>
         
         <div class="details-buttons-bottom">
-            <a href="" class="details-button outline">
-                <i class="fa-solid fa-syringe"></i> Registrar Vacina
-            </a>
+            {% if animal.is_vaccineable %}
+                <a href="" class="details-button outline">
+                    <i class="fa-solid fa-syringe"></i> Registrar Vacina
+                </a>
+            {% endif %}
 
-            {% if animal.species.name == "DOG" %}
+            {% if animal.is_trainable %}
                 <a href="" class="details-button outline">
                     <i class="fa-solid fa-bone"></i> Registrar Treinamento
                 </a>

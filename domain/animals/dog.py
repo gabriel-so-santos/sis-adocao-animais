@@ -27,6 +27,9 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
 
     def extra_info(self):
         return f"Precisa de passeio?: {'Sim' if self.needs_walk else 'Não'}"
+    
+    def needs_walk_format(self):
+        return 'Sim' if self.needs_walk else 'Não'
 
     @property
     def needs_walk(self) -> bool:
@@ -37,3 +40,16 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
         if not isinstance(v, bool):
             raise TypeError("needs_walk deve ser um booleano.")
         self.__needs_walk = v
+
+    def __str__(self):
+        return (
+            f"Nome: {self.name}\n"
+            f"Espécie: {self.species_format()}\n"
+            f"Raça: {self.breed}\n"
+            f"Sexo: {self.gender_format()}\n"
+            f"Idade: {self.age_months} meses\n"
+            f"Porte: {self.size_format()}\n"
+            f"Temperamento: {self.temperament_format()}\n"
+            f"Status atual: {self.status_format()}\n"
+            f"{self.extra_info()}"
+        )

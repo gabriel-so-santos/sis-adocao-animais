@@ -26,6 +26,9 @@ class Cat(VaccinableMixin, Animal):
 
     def extra_info(self):
         return f"É Hipoalergênico?: {'Sim' if self.is_hypoallergenic else 'Não'}"
+    
+    def is_hypoallergenic_format(self):
+        return 'Sim' if self.is_hypoallergenic else 'Não'
 
     @property
     def is_hypoallergenic(self) -> bool:
@@ -36,3 +39,16 @@ class Cat(VaccinableMixin, Animal):
         if not isinstance(v, bool):
             raise TypeError("is_hypoallergenic deve ser um booleano.")
         self.__is_hypoallergenic = v
+
+    def __str__(self):
+        return (
+            f"Nome: {self.name}\n"
+            f"Espécie: {self.species_format()}\n"
+            f"Raça: {self.breed}\n"
+            f"Sexo: {self.gender_format()}\n"
+            f"Idade: {self.age_months} meses\n"
+            f"Porte: {self.size_format()}\n"
+            f"Temperamento: {self.temperament_format()}\n"
+            f"Status atual: {self.status_format()}\n"
+            f"{self.extra_info()}"
+        )
