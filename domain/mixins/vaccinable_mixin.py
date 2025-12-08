@@ -1,0 +1,12 @@
+from domain.events.events import VaccineEvent
+
+class VaccinableMixin:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._vaccines: list[VaccineEvent] = []
+
+    @property
+    def vaccines(self) -> list[VaccineEvent]:
+        return self._vaccines
+    

@@ -1,13 +1,27 @@
-from domain.animals.animal import Animal
-from domain.animals.mixins import VaccinableMixin
+from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
+from domain.mixins.vaccinable_mixin import  VaccinableMixin
 
-class Cat(Animal, VaccinableMixin):
+class Cat(VaccinableMixin, Animal):
     """Gato com características específicas."""
     html_icon = "fa-solid fa-cat"
 
-    def __init__(self, *args, is_hypoallergenic: bool, **kwargs):
-        Animal.__init__(self, *args, **kwargs)
-        VaccinableMixin.__init__(self)
+    def __init__(self,
+        id: int,
+        species: Species,
+        breed: str,
+        name: str,
+        gender: Gender,
+        age_months: int,
+        size: Size,
+        temperament: list[str] | None,
+        status: AnimalStatus,
+
+        is_hypoallergenic: bool
+        ):
+
+        super().__init__(
+            id, species, breed, name, gender, age_months, size, temperament, status
+        )
         self.is_hypoallergenic = is_hypoallergenic
 
     def extra_info(self):

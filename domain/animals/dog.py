@@ -1,14 +1,28 @@
-from domain.animals.animal import Animal
-from domain.animals.mixins import VaccinableMixin, TrainableMixin
+from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
+from domain.mixins.vaccinable_mixin import  VaccinableMixin
+from domain.mixins.trainable_mixin import TrainableMixin
 
-class Dog(Animal,  VaccinableMixin, TrainableMixin):
+class Dog(VaccinableMixin, TrainableMixin, Animal):
     """Cachorro com características específicas."""
     html_icon = "fa-solid fa-dog"
 
-    def __init__(self, *args, needs_walk: bool, **kwargs):
-        Animal.__init__(self, *args, **kwargs)
-        VaccinableMixin.__init__(self)
-        TrainableMixin.__init__(self)
+    def __init__(self,
+        id: int,
+        species: Species,
+        breed: str,
+        name: str,
+        gender: Gender,
+        age_months: int,
+        size: Size,
+        temperament: list[str] | None,
+        status: AnimalStatus,
+
+        needs_walk: bool
+        ):
+
+        super().__init__(
+            id, species, breed, name, gender, age_months, size, temperament, status
+        )
         self.needs_walk = needs_walk
 
     def extra_info(self):
