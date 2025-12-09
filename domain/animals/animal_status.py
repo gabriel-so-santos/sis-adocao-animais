@@ -35,4 +35,28 @@ class AnimalStatus(Enum):
         Returns:
             bool: True se a transição for permitida, False caso contrário.
         """
-        pass
+        transitions = {
+            AnimalStatus.AVAILABLE: {
+                AnimalStatus.RESERVED,
+                AnimalStatus.UNADOPTABLE,
+            },
+            AnimalStatus.RESERVED: {
+                AnimalStatus.ADOPTED,
+            },
+            AnimalStatus.ADOPTED: {
+                AnimalStatus.RETURNED,
+            },
+            AnimalStatus.RETURNED: {
+                AnimalStatus.QUARANTINE,
+                AnimalStatus.AVAILABLE,
+                AnimalStatus.UNADOPTABLE,
+            },
+            AnimalStatus.QUARANTINE: {
+                AnimalStatus.AVAILABLE,
+                AnimalStatus.UNADOPTABLE,
+            },
+            AnimalStatus.UNADOPTABLE: set(),
+        }
+
+        allowed = transitions.get(current_status, set())
+        return new_status in allowed

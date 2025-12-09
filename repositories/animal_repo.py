@@ -1,6 +1,10 @@
 from models.animal_model import AnimalModel
 import json
 
+from domain.exeptions import InvalidStatusTransitionError
+from domain.animals.animal import Species, Gender, Size
+from domain.animals.animal_status import AnimalStatus
+
 from domain.animals.cat import Cat
 from domain.animals.dog import Dog
 
@@ -10,8 +14,6 @@ class AnimalRepository:
 
     def to_domain(self, animal_model: AnimalModel) -> Cat | Dog:
         """Converte o Model (SQL) em entidades de domínio"""
-        from domain.animals.animal import Species, Gender, Size
-        from domain.animals.animal_status import AnimalStatus
         
         species = Species[animal_model.species]
         extra_data = animal_model.extra_data or {}
@@ -87,6 +89,16 @@ class AnimalRepository:
         return self.session.get(AnimalModel, id)
 
     # ---- Update ----
+    def update_status(self, id: int, new_status: AnimalStatus) -> None:
+        animal_db = self.get_by_id(id)
+        current = AnimalStatus[animal_db.status]
+
+        if AnimalStatus.is_valid_transition(current, new_status):
+            animal_db.status = new_status.value
+
+        else:
+            raise InvalidStatusTransitionError(f"Transição inválida! {current} -> {new_status}")
+
     def update(self, animal) -> AnimalModel | None:
         """Atualiza um registro existente no banco a partir de um objeto de domínio"""
         animal_db = self.session.get(AnimalModel, animal.id)

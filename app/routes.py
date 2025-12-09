@@ -42,6 +42,12 @@ def save_animal():
 
     species = Species[request.form["species"].upper()]
 
+    temperament = list()
+    for t in request.form["temperament"].split(","):
+        valor = t.strip().capitalize()
+        if valor:
+            temperament.append(valor)
+
     if species == Species.CAT:
         from domain.animals.cat import Cat
 
@@ -53,7 +59,7 @@ def save_animal():
             gender = Gender[request.form["gender"].upper()],
             age_months = int(request.form["age_months"]),
             size = Size[request.form["size"].upper()],
-            temperament = [t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            temperament = temperament,
             status = AnimalStatus[request.form["status"].upper()],
 
             is_hypoallergenic = request.form.get("is_hypoallergenic", "false") == "true"
@@ -70,7 +76,7 @@ def save_animal():
             gender = Gender[request.form["gender"].upper()],
             age_months = int(request.form["age_months"]),
             size = Size[request.form["size"].upper()],
-            temperament = [t.strip() for t in request.form["temperament"].split(",") if t.strip()],
+            temperament = temperament,
             status = AnimalStatus[request.form["status"].upper()],
             
             needs_walk = request.form.get("needs_walk", "false") == "true"
@@ -207,6 +213,7 @@ def save_adoption_reservation():
     animal_id = int(request.form.get("animal_id"))
     adopter_id = int(request.form.get("adopter_id"))
 
+    animal_repo.update_status(id=animal_id, new_status=AnimalStatus.RESERVED)
     reservation_event = ReservationEvent(
         id=None,
         animal_id=animal_id,

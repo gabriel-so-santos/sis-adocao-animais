@@ -1,6 +1,7 @@
 from abc import ABC
 from enum import Enum
 from domain.animals.animal_status import AnimalStatus
+from domain.exeptions import InvalidStatusTransitionError
 
 class Species(Enum):
     CAT = "CAT"
@@ -43,8 +44,8 @@ class Animal(ABC):
     ):
         self._id = id
         self.species = species
-        self.breed = breed.capitalize()
-        self.name = name.capitalize()
+        self.breed = breed.capitalize().strip()
+        self.name = name.capitalize().strip()
         self.gender = gender
         self.age_months = age_months
         self.size = size
@@ -187,4 +188,11 @@ class Animal(ABC):
     def status(self, v: AnimalStatus) -> None:
         if not isinstance(v, AnimalStatus):
             raise TypeError("status deve ser um item do enum AnimalStatus.")
+        
+        current = getattr(self, "_status", None)
+
+        if current is not None:
+            if not AnimalStatus.is_valid_transition(current, v):
+                raise InvalidStatusTransitionError(f"Transição inválida! {current} -> {v}")
+
         self._status = v
