@@ -28,7 +28,9 @@ class Person(ABC):
 
     @name.setter
     def name(self, v: str) -> None:
-        if not v.strip() or not isinstance(v, str):
+        if not isinstance(v, str):
+            raise TypeError("name deve ser uma string não vazia.")
+        if not v.strip():
             raise ValueError("name deve ser uma string não vazia.")
         self._name = v
 

@@ -5,6 +5,8 @@ import json
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
+    
+minimum_age =  settings["policies"]["minimum_adopter_age"]
 
 class HousingType(Enum):
     HOUSE = "HOUSE"
@@ -79,7 +81,6 @@ class Adopter(Person):
         if not isinstance(v, int):
             raise TypeError("age deve ser do tipo int.")
         
-        minimum_age =  settings["policies"]["minimum_adopter_age"]
         if v < minimum_age:
             raise PolicyNotMetError(f"A idade mínima para adotantes é {minimum_age} anos.")
         
