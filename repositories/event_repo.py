@@ -50,10 +50,27 @@ class EventRepository:
         self.session.commit()
         return event_db
 
-    def list_by_type(self, event_type: EventType) -> list[EventModel]:
+    def list_by_type(self, event_type: EventType, animal_id: int = None) -> list[EventModel]:
         """Retorna todos os eventos do tipo especificado"""
-        return self.session.query(EventModel).filter_by(event_type=event_type.value).all()
+
+        query = self.session.query(EventModel).filter_by(event_type=event_type.value)
+
+        if animal_id is not None:
+            query = query.filter_by(animal_id=animal_id)
+
+        return query.all()
 
     def get_by_id(self, id: int) -> EventModel:
         """Retorna um evento pelo ID"""
         return self.session.get(EventModel, id)
+    
+     # ---- Delete ----
+    def delete_by_id(self, id: int) -> bool:
+        event_db = self.session.get(EventModel, id)
+
+        if not event_db:
+            return False
+
+        self.session.delete(event_db)
+        self.session.commit()
+        return True

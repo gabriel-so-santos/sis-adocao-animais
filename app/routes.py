@@ -55,8 +55,8 @@ def save_animal():
         animal = Cat(
             id = None,
             species = species,
-            breed = request.form["breed"],
-            name = request.form["name"],
+            breed = request.form["breed"].strip().capitalize(),
+            name = request.form["name"].strip().capitalize(),
             gender = Gender[request.form["gender"].upper()],
             age_months = int(request.form["age_months"]),
             size = Size[request.form["size"].upper()],
@@ -72,8 +72,8 @@ def save_animal():
         animal = Dog(
             id = None,
             species = species,
-            breed = request.form["breed"],
-            name = request.form["name"],
+            breed = request.form["breed"].strip().capitalize(),
+            name = request.form["name"].strip().capitalize(),
             gender = Gender[request.form["gender"].upper()],
             age_months = int(request.form["age_months"]),
             size = Size[request.form["size"].upper()],
@@ -135,7 +135,7 @@ def save_adopter():
     else:
         adopter = Adopter(
             id = None,
-            name = request.form["name"],
+            name = request.form["name"].strip().capitalize(),
             age = age,
             housing_type = HousingType[request.form["housing_type"].upper()],
             usable_area = float(request.form["usable_area"]),
@@ -212,18 +212,55 @@ def adoption_reservation():
 
 @app.route("/adoptions/reservations/save", methods=["GET", "POST"])
 def save_adoption_reservation():
-    animal_id = int(request.form.get["animal_id"])
-    adopter_id = int(request.form.get["adopter_id"])
+    animal_id = int(request.form["animal_id"])
+    adopter_id = int(request.form["adopter_id"])
 
     animal_repo.update_status(id=animal_id, new_status=AnimalStatus.RESERVED)
     reservation= ReservationEvent(
         id=None,
         animal_id=animal_id,
         timestamp=None,
-        adopter_id=adopter_id
+        adopter_id=adopter_id,
     )
     event_repo.save(reservation)
 
+    return redirect(url_for("adoption_reservation_list"))
+
+@app.route("/adoptions/reservations/confirm")
+def confirm_adoption():
+    id = request.args.get("id")
+
+    reservation_db = event_repo.get_by_id(id)
+    reservation = event_repo.to_domain(reservation_db)
+
+    animal_id = reservation.animal_id
+    adopter_id = reservation.adopter_id
+
+    saved_reservations = event_repo.list_by_type(
+        event_type=EventType.RESERVATION,
+        animal_id=animal_id
+    )
+
+    for r in saved_reservations:
+        event_repo.delete_by_id(r.id)
+
+    animal_repo.update_status(id=animal_id, new_status=AnimalStatus.ADOPTED)
+    adoption = AdoptionEvent(
+        id=None,
+        animal_id=animal_id,
+        timestamp=None,
+        adopter_id=adopter_id,
+        fee=0
+    )
+    event_repo.save(adoption)
+
+    return redirect(url_for("adoption_reservation_list"))
+
+@app.route("/adoptions/reservations/cancel")
+def cancel_reservation():
+    id = request.args.get("id")
+
+    event_repo.delete_by_id(id)
     return redirect(url_for("adoption_reservation_list"))
 
 #VACCINE
@@ -246,7 +283,7 @@ def save_vaccine(animal_id):
         animal_id=animal_id,
         timestamp=date,
         vaccine_name=request.form["vaccine_name"].strip(),
-        veterinarian=request.form.get("veterinarian", None).capitalize()
+        veterinarian=request.form.get("veterinarian", None).strip().capitalize()
     )
     event_repo.save(vaccine)
 
@@ -273,7 +310,7 @@ def save_training(animal_id):
         timestamp=date,
         duration_min= int(request.form.get("duration_min") or 0),
         training_type=request.form["training_type"],
-        trainer=request.form["trainer"],
+        trainer=request.form["trainer"].strip().capitalize(),
         notes=request.form["notes"]
     )
     event_repo.save(training)

@@ -35,6 +35,9 @@ class AnimalStatus(Enum):
         Returns:
             bool: True se a transição for permitida, False caso contrário.
         """
+        if current_status == new_status:
+            return True
+
         transitions = {
             AnimalStatus.AVAILABLE: {
                 AnimalStatus.RESERVED,

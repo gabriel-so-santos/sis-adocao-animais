@@ -31,11 +31,11 @@
                     </p>
 
                     <div class="reservation-actions">
-                        <a href="" class="reservation-button confirm">
+                        <a href="{{ url_for('confirm_adoption', id=r.id) }}" class="reservation-button confirm">
                             <i class="fa-solid fa-check"></i> Confirmar Adoção
                         </a>
 
-                        <a href="" class="reservation-button cancel">
+                        <a href="{{ url_for('cancel_reservation', id=r.id) }}" class="reservation-button cancel">
                             <i class="fa-solid fa-x"></i> Cancelar
                         </a>
                     </div>
