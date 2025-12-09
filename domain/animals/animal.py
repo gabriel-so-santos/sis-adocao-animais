@@ -44,8 +44,8 @@ class Animal(ABC):
     ):
         self._id = id
         self.species = species
-        self.breed = breed.capitalize().strip()
-        self.name = name.capitalize().strip()
+        self.breed = breed
+        self.name = name
         self.gender = gender
         self.age_months = age_months
         self.size = size
@@ -116,9 +116,12 @@ class Animal(ABC):
 
     @breed.setter
     def breed(self, v: str) -> None:
-        if not v.strip() or not isinstance(v, str):
+        if not isinstance(v, str):
+            raise TypeError("breed deve ser uma string não vazia.")
+        if not v.strip():
             raise ValueError("breed deve ser uma string não vazia.")
         self._breed = v
+
 
     # ---- Name ----
     @property
@@ -127,7 +130,9 @@ class Animal(ABC):
 
     @name.setter
     def name(self, v: str) -> None:
-        if not v.strip() or not isinstance(v, str):
+        if not isinstance(v, str):
+            raise TypeError("name deve ser uma string não vazia.")
+        if not v.strip():
             raise ValueError("name deve ser uma string não vazia.")
         self._name = v
 
