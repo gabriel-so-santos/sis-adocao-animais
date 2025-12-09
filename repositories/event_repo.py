@@ -36,7 +36,7 @@ class EventRepository:
         timestamp = timestamp or datetime.now(timezone.utc)
 
         data = asdict(event)
-        extra_data = {k: v for k, v in data.items() if k not in ("animal_id", "event_type", "timestamp")}
+        extra_data = {k: v for k, v in data.items() if k not in ("id", "animal_id", "event_type", "timestamp")}
 
         event_db = EventModel(
             id=event.id,

@@ -131,7 +131,7 @@ def save_adopter():
             name = request.form["name"],
             age = age,
             housing_type = HousingType[request.form["housing_type"].upper()],
-            usable_area = int(request.form["usable_area"]),
+            usable_area = float(request.form["usable_area"]),
             has_pet_experience = request.form["has_pet_experience"] == "true",
             has_children_at_home = request.form["has_children_at_home"] == "true",
             has_other_animals = request.form["has_other_animals"] == "true"
