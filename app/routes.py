@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, request
 from main import app, session
 import json
+from datetime import datetime
 
 from domain.animals.animal import Species, Gender, Size, AnimalStatus
 from repositories.animal_repo import AnimalRepository
@@ -8,7 +9,7 @@ from repositories.animal_repo import AnimalRepository
 from domain.people.adopter import Adopter, HousingType
 from repositories.adopter_repo import AdopterRepository
 
-from domain.events.events import EventType, ReservationEvent, AdoptionEvent
+from domain.events.events import EventType, ReservationEvent, AdoptionEvent, VaccineEvent, TrainingEvent
 from repositories.event_repo import EventRepository
 
 with open("settings.json", "r", encoding="utf-8") as f:
@@ -85,7 +86,7 @@ def save_animal():
     animal_repo.save(animal)
     return redirect(url_for("homepage"))
 
-@app.route("/animals/details/<id>", methods=["GET", "POST"])
+@app.route("/animals/<id>/details", methods=["GET", "POST"])
 def animal_details(id):
     animal_db = animal_repo.get_by_id(id)
     animal = animal_repo.to_domain(animal_db)
@@ -150,6 +151,7 @@ def save_adopter():
 
 event_repo = EventRepository(session)
 
+#RESERVATION
 @app.route("/adoptions/reservations")
 def adoption_reservation_list():
     reservations_db = event_repo.list_by_type(EventType.RESERVATION)
@@ -174,7 +176,7 @@ def adoption_reservation_list():
 
     return render_template("adoption_reservation_list.html", reservations=reservations_full)
 
-@app.route("/adoptions/reservations/new", methods=["GET", "POST"])
+@app.route("/adoptions/reservations/new")
 def adoption_reservation():
     animal_id = request.args.get("animal_id")
     adopter_id = request.args.get("adopter_id")
@@ -210,16 +212,70 @@ def adoption_reservation():
 
 @app.route("/adoptions/reservations/save", methods=["GET", "POST"])
 def save_adoption_reservation():
-    animal_id = int(request.form.get("animal_id"))
-    adopter_id = int(request.form.get("adopter_id"))
+    animal_id = int(request.form.get["animal_id"])
+    adopter_id = int(request.form.get["adopter_id"])
 
     animal_repo.update_status(id=animal_id, new_status=AnimalStatus.RESERVED)
-    reservation_event = ReservationEvent(
+    reservation= ReservationEvent(
         id=None,
         animal_id=animal_id,
-        adopter_id=adopter_id,
         timestamp=None,
+        adopter_id=adopter_id
     )
-    event_repo.save(reservation_event)
+    event_repo.save(reservation)
 
     return redirect(url_for("adoption_reservation_list"))
+
+#VACCINE
+@app.route("/animals/<animal_id>/vaccine/new")
+def vaccine_registration(animal_id):
+
+    animal_db = animal_repo.get_by_id(animal_id)
+    animal = animal_repo.to_domain(animal_db)
+
+    return render_template("vaccine_registration.html", animal=animal)
+
+@app.route("/animals/<animal_id>/vaccine/save", methods=["POST"])
+def save_vaccine(animal_id):
+
+    date_str = request.form["vaccine_date"]
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+
+    vaccine = VaccineEvent(
+        id=None,
+        animal_id=animal_id,
+        timestamp=date,
+        vaccine_name=request.form["vaccine_name"].strip(),
+        veterinarian=request.form.get("veterinarian", None).capitalize()
+    )
+    event_repo.save(vaccine)
+
+    return redirect(url_for("animal_details", id=animal_id))
+
+#TRAINING
+@app.route("/animals/<animal_id>/training/new")
+def training_registration(animal_id):
+
+    animal_db = animal_repo.get_by_id(animal_id)
+    animal = animal_repo.to_domain(animal_db)
+
+    return render_template("training_registration.html", animal=animal)
+
+@app.route("/animals/<animal_id>/training/save", methods=["POST"])
+def save_training(animal_id):
+
+    date_str = request.form["training_date"]
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+
+    training = TrainingEvent(
+        id=None,
+        animal_id=animal_id,
+        timestamp=date,
+        duration_min= int(request.form.get("duration_min") or 0),
+        training_type=request.form["training_type"],
+        trainer=request.form["trainer"],
+        notes=request.form["notes"]
+    )
+    event_repo.save(training)
+
+    return redirect(url_for("animal_details", id=animal_id))

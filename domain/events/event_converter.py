@@ -27,10 +27,13 @@ class EventConverter:
 
         if event_type == EventType.VACCINE:
             kwargs["vaccine_name"] = str(extra_data.get("vaccine_name", ""))
+            kwargs["veterinarian"] = str(extra_data.get("veterinarian", ""))
             return VaccineEvent(**kwargs)
 
         if event_type == EventType.TRAINING:
             kwargs["duration_min"] = int(extra_data.get("duration_min", 0))
+            kwargs["training_type"] = str(extra_data.get("training_type", ""))
+            kwargs["trainer"] = str(extra_data.get("trainer", ""))
             kwargs["notes"] = str(extra_data.get("notes", ""))
             return TrainingEvent(**kwargs)
 

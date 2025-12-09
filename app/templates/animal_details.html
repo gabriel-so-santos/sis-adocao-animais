@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block body %}
-
 <div class="details-container">
 
     <!-- Title -->
@@ -41,13 +40,13 @@
         
         <div class="details-buttons-bottom">
             {% if animal.is_vaccineable %}
-                <a href="" class="details-button outline">
+                <a href="{{ url_for('vaccine_registration', animal_id=animal.id) }}" class="details-button outline">
                     <i class="fa-solid fa-syringe"></i> Registrar Vacina
                 </a>
             {% endif %}
 
             {% if animal.is_trainable %}
-                <a href="" class="details-button outline">
+                <a href="{{ url_for('training_registration', animal_id=animal.id) }}" class="details-button outline">
                     <i class="fa-solid fa-bone"></i> Registrar Treinamento
                 </a>
             {% endif %}
@@ -56,5 +55,4 @@
     </div>
 
 </div>
-
 {% endblock %}

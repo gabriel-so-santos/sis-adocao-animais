@@ -23,6 +23,8 @@ class Event:
 @dataclass
 class TrainingEvent(Event):
     duration_min: int
+    training_type: str
+    trainer: str
     notes: str
 
     event_type: EventType = field(init=False, default=EventType.TRAINING)
@@ -31,7 +33,8 @@ class TrainingEvent(Event):
 @dataclass
 class VaccineEvent(Event):
     vaccine_name: str
-
+    veterinarian: str
+    
     event_type: EventType = field(init=False, default=EventType.VACCINE)
 
 

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Registrar Vacina</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+
+    <h1 class="details-title">Registrar Treinamento</h1>
+
+    <div class="details-card">
+        <h2 class="section-title">Animal</h2>
+        <p>
+            {{ animal.name }} - {{ animal.species_format() }} - {{ animal.breed }}
+        </p>
+    </div>
+
+    <form action="{{ url_for('save_training', animal_id=animal.id) }}" method="POST" class="form details-card">
+
+        <h2 class="section-title">Sessão de Treinamento</h2>
+
+        <label for="training_date">Data do Treinamento:</label>
+        <input type="date" id="training_date" name="training_date" required>
+
+        <label for="duration_min">Duração em Minutos:</label>
+        <input type="number" id="duration_min" name="duration_min" min="0" placeholder="Opcional">
+
+        <label for="trainer">Treinador Responsável:</label>
+        <input type="text" id="trainer" name="trainer" placeholder="Opcional">
+
+        <label for="training_type">Tipo de Treinamento:</label>
+        <input type="text" id="training_type" name="training_type" placeholder="Opcional">
+
+        <label for="notes">Anotacões extras:</label>
+        <input type="text" id="notes" name="notes" placeholder="Opcional">
+
+        <button type="submit" class="details-button outline" style="margin-top: 20px;">
+            <i class="fa-solid fa-bone"></i> Confirmar Registro
+        </button>
+    </form>
+
+</div>
+{% endblock %}
