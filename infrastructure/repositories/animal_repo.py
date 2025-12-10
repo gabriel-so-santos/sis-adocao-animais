@@ -1,4 +1,4 @@
-from models.animal_model import AnimalModel
+from infrastructure.models.animal_model import AnimalModel
 import json
 
 from domain.exeptions import InvalidStatusTransitionError

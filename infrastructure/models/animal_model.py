@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, JSON
 from sqlalchemy.orm import relationship
-from models.base_model import Base
+from infrastructure.database.db_connection import Base
 
 class AnimalModel(Base):
     __tablename__ = "animals"

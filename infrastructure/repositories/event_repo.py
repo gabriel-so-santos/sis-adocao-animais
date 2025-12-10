@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from dataclasses import asdict
-from models.event_model import EventModel
+from infrastructure.models.event_model import EventModel
 from domain.events.events import EventType
 
 class EventRepository:

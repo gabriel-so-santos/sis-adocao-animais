@@ -4,13 +4,13 @@ import json
 from datetime import datetime
 
 from domain.animals.animal import Species, Gender, Size, AnimalStatus
-from repositories.animal_repo import AnimalRepository
+from infrastructure.repositories.animal_repo import AnimalRepository
 
 from domain.people.adopter import Adopter, HousingType
-from repositories.adopter_repo import AdopterRepository
+from infrastructure.repositories.adopter_repo import AdopterRepository
 
 from domain.events.events import EventType, ReservationEvent, AdoptionEvent, VaccineEvent, TrainingEvent
-from repositories.event_repo import EventRepository
+from infrastructure.repositories.event_repo import EventRepository
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)

@@ -1,4 +1,4 @@
-from models.adopter_model import AdopterModel
+from infrastructure.models.adopter_model import AdopterModel
 from domain.people.adopter import Adopter, HousingType
         
 
