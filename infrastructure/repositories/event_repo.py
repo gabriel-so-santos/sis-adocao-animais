@@ -1,30 +1,63 @@
 from datetime import datetime, timezone
 from dataclasses import asdict
-from infrastructure.models.event_model import EventModel
-from domain.events.events import EventType
 
-class EventRepository:
+from .base_repo import BaseRepository
+from typing import override
+
+from infrastructure.db_models.event_model import EventModel
+from domain.events.events import Event, EventType
+
+class EventRepository(BaseRepository):
+    
     def __init__(self, session):
-        self.session = session
+        super().__init__(session, EventModel)
 
-    def to_domain(self, event_model: EventModel):
-        """Converte o Model (SQL) em entidades de domínio"""
+    @override
+    def _to_domain(self, event_model: EventModel) -> Event:
+        """
+        Converte uma instância de EventModel (SQLAlchemy) em uma entidade de domínio Event,
+        reconstruindo os dados conforme o tipo específico do evento.
+
+        Args:
+            event_model (EventModel): Instância do modelo persistido no banco,
+            contendo os dados do evento registrado.
+
+        Returns:
+            Event: Entidade de domínio correspondente ao registro encontrado,
+            com os campos convertidos e normalizados.
+        """
         from domain.events.event_converter import EventConverter
 
         timestamp = event_model.timestamp
         if isinstance(timestamp, str):
             timestamp = datetime.fromisoformat(timestamp)
 
-        return EventConverter.convert_to_domain_event(
+        event = EventConverter.convert_to_domain_event(
             id=event_model.id,
             animal_id=event_model.animal_id,
             event_type=EventType[event_model.event_type],
             timestamp=timestamp,
             extra_data=event_model.extra_data or {}
         )
+        return event
+    
+    @override
+    def _to_model(self, event: Event) -> EventModel:
+        """
+        Converte uma entidade de domínio Event em um objeto EventModel para
+        persistência no banco de dados, garantindo o tratamento correto do timestamp
+        e o mapeamento de campos adicionais para extra_data.
 
-    def save(self, event):
-        """Salva objeto de domínio no banco, mapeando campos extras para extra_data"""
+        Args:
+            event (Event): Entidade de domínio contendo os dados a serem convertidos.
+
+        Returns:
+            EventModel: Instância pronta para ser inserida ou atualizada no banco
+            de dados.
+        
+        Raises:
+            ValueError: Caso o timestamp seja informado como string em formato inválido.
+        """
         timestamp = event.timestamp
         if isinstance(timestamp, str):
             try:
@@ -36,41 +69,44 @@ class EventRepository:
         timestamp = timestamp or datetime.now(timezone.utc)
 
         data = asdict(event)
-        extra_data = {k: v for k, v in data.items() if k not in ("id", "animal_id", "event_type", "timestamp")}
+        extra_data = {
+            key: value
+            for key, value in data.items()
+            if key not in ("id", "animal_id", "event_type", "timestamp")
+        }
 
-        event_db = EventModel(
+        event_model = EventModel(
             id=event.id,
             animal_id=event.animal_id,
             event_type=event.event_type.value,
             timestamp=timestamp,
             extra_data=extra_data
         )
+        return event_model
 
-        self.session.add(event_db)
-        self.session.commit()
-        return event_db
+    @override
+    def list_all(self, event_type: EventType = None, animal_id: int = None) -> list[Event]:
+        """
+        Recupera todos os eventos registrados no banco, com possibilidade de filtragem
+        por tipo de evento e/ou identificador do animal associado.
 
-    def list_by_type(self, event_type: EventType, animal_id: int = None) -> list[EventModel]:
-        """Retorna todos os eventos do tipo especificado"""
+        Args:
+            event_type (EventType): Tipo de evento desejado.
+            animal_id (int): Identificador do animal cujos eventos
+            devem ser retornados.
 
-        query = self.session.query(EventModel).filter_by(event_type=event_type.value)
+        Returns:
+            list[Event]: Lista de entidades de domínio correspondentes aos registros
+            encontrados no banco, já convertidas via mapeamento de domínio.
+        """
+        query = self.session.query(EventModel)
+
+        if event_type is not None:
+            query = query.filter_by(event_type=event_type.value)
 
         if animal_id is not None:
             query = query.filter_by(animal_id=animal_id)
 
-        return query.all()
-
-    def get_by_id(self, id: int) -> EventModel:
-        """Retorna um evento pelo ID"""
-        return self.session.get(EventModel, id)
-    
-     # ---- Delete ----
-    def delete_by_id(self, id: int) -> bool:
-        event_db = self.session.get(EventModel, id)
-
-        if not event_db:
-            return False
-
-        self.session.delete(event_db)
-        self.session.commit()
-        return True
+        models = query.all()
+        events = [self._to_domain(model) for model in models]
+        return events

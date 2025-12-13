@@ -1,57 +1,78 @@
-from infrastructure.models.animal_model import AnimalModel
 import json
 
-from domain.exeptions import InvalidStatusTransitionError
+from .base_repo import BaseRepository
+from typing import override
+
 from domain.animals.animal import Species, Gender, Size
 from domain.animals.animal_status import AnimalStatus
 
+from infrastructure.db_models.animal_model import AnimalModel
 from domain.animals.cat import Cat
 from domain.animals.dog import Dog
 
-class AnimalRepository:
-    def __init__(self, session):
-        self.session = session
+from domain.exceptions import InvalidStatusTransitionError
 
-    def to_domain(self, animal_model: AnimalModel) -> Cat | Dog:
-        """Converte o Model (SQL) em entidades de domínio"""
+class AnimalRepository(BaseRepository):
+
+    def __init__(self, session):
+        super().__init__(session, AnimalModel)
+
+    @override
+    def _to_domain(self, animal_model: AnimalModel) -> Cat | Dog:
+        """
+        Converte um objeto AnimalModel (SQLAlchemy) em uma entidade de domínio
+        correspondente (Cat ou Dog).
+
+        Args:
+            animal_model (AnimalModel): Instância do modelo persistido no banco.
+
+        Returns:
+            animal (Cat | Dog): Entidade de domínio reconstruída a partir dos dados
+            armazenados no banco de dados.
+        """
         
-        species = Species[animal_model.species]
+        species = Species[animal_model.species]         
         extra_data = animal_model.extra_data or {}
+
+        common_args = dict(
+            id=animal_model.id,
+            species=species,                            # Enum
+            breed=animal_model.breed,
+            name=animal_model.name,
+            gender=Gender[animal_model.gender],         # Enum
+            age_months=animal_model.age_months,
+            size=Size[animal_model.size],               # Enum
+            temperament=json.loads(animal_model.temperament),
+            status=AnimalStatus[animal_model.status]    # Enum
+
+        )
 
         if species == Species.CAT:   
             animal = Cat(
-                id=animal_model.id,
-                species=species,
-                breed=animal_model.breed,
-                name=animal_model.name,
-                gender=Gender[animal_model.gender],
-                age_months=animal_model.age_months,
-                size=Size[animal_model.size],
-                temperament=json.loads(animal_model.temperament),
-                status=AnimalStatus[animal_model.status],
+                **common_args,
                 is_hypoallergenic=extra_data.get("is_hypoallergenic", False)
             )
-
         else:
             animal = Dog(
-                id=animal_model.id,
-                species=species,
-                breed=animal_model.breed,
-                name=animal_model.name,
-                gender=Gender[animal_model.gender],
-                age_months=animal_model.age_months,
-                size=Size[animal_model.size],
-                temperament=json.loads(animal_model.temperament),
-                status=AnimalStatus[animal_model.status],
+                **common_args,
                 needs_walk=extra_data.get("needs_walk", False)
             )
-
         return animal
+    
+    @override
+    def _to_model(self, animal: Cat | Dog) -> AnimalModel:
+        """
+        Converte uma entidade de domínio (Cat ou Dog) em um objeto AnimalModel
+        para persistência no banco de dados.
 
-    # ---- Create ----
-    def save(self, animal: Cat | Dog) -> AnimalModel:
-        """Salva uma entidade Animal no banco"""
+        Args:
+            animal (Cat | Dog): Entidade de domínio contendo os dados
+            a serem convertidos.
 
+        Returns:
+            AnimalModel: Instância correspondente ao modelo de dados pronto
+            para inserção ou atualização no banco.
+        """
         extra_data = {}
 
         if isinstance(animal, Dog):
@@ -60,72 +81,67 @@ class AnimalRepository:
         if isinstance(animal, Cat):
             extra_data["is_hypoallergenic"] = animal.is_hypoallergenic
 
-
-        animal_db = AnimalModel(
+        animal_model = AnimalModel(
             id=animal.id, 
-            species=animal.species.name,        # Enum -> str
+            species=animal.species.value,               # Enum
             breed=animal.breed,
             name=animal.name,
-            gender=animal.gender.name,          # Enum -> str
+            gender=animal.gender.value,                 # Enum   
             age_months=animal.age_months,
-            size=animal.size.name,              #Enum -> str
-            temperament=json.dumps(animal.temperament),
-            status=animal.status.name,          # Enum -> str
+            size=animal.size.value,                     # Enum       
+            temperament=json.dumps(animal.temperament),   
+            status=animal.status.value,                 # Enum
+
             extra_data=extra_data
         )
+        return animal_model
+    
+    @override  
+    def update(self, animal: Cat | Dog) -> bool:
+        """
+        Atualiza um registro existente no banco com base nos dados
+        fornecidos pela entidade de domínio (com execeção do stuatus do animal).
 
-        self.session.add(animal_db)
+        Args:
+            animal (Cat | Dog): Entidade contendo os dados atualizados.
+
+        Returns:
+            bool: True se a atualização foi bem-sucedida, False se o registro não existir.
+        """
+        animal_model = self._to_model(animal)
+
+        if not animal_model:
+            return False
+        
+        animal_model.breed = animal.breed
+        animal_model.name = animal.name
+        animal_model.gender = animal.gender.value
+        animal_model.age_months = animal.age_months
+        animal_model.size = animal.size.value
+        animal_model.temperament = json.dumps(animal.temperament)
+
         self.session.commit()
-        self.session.refresh(animal_db)
-        return animal_db
+        self.session.refresh(animal_model)
+        return True
 
-    # ---- Read ----
-    def list_all(self) -> list[AnimalModel]:
-        """Retorna uma lista de todos os anmais cadastrados no banco"""
-        return self.session.query(AnimalModel).all()
-
-    def get_by_id(self, id: int) -> AnimalModel:
-        """Retorna um animal cadastrado no banco"""
-        return self.session.get(AnimalModel, id)
-
-    # ---- Update ----
     def update_status(self, id: int, new_status: AnimalStatus) -> None:
-        animal_db = self.get_by_id(id)
-        current = AnimalStatus[animal_db.status]
+        """
+        Atualiza apenas o status de um animal, garantindo que a transição de estado
+        seja válida conforme as regras definidas em AnimalStatus.
+
+        Args:
+            id (int): Identificador do animal.
+            new_status (AnimalStatus): Novo status a ser aplicado.
+
+        Raises:
+            InvalidStatusTransitionError: Caso a transição seja inválida.
+        """
+        animal_model = self.session.get(AnimalModel, id)
+
+        current = AnimalStatus[animal_model.status]
 
         if AnimalStatus.is_valid_transition(current, new_status):
-            animal_db.status = new_status.value
+            animal_model.status = new_status.value
 
         else:
             raise InvalidStatusTransitionError(f"Transição inválida! {current} -> {new_status}")
-
-    def update(self, animal) -> AnimalModel | None:
-        """Atualiza um registro existente no banco a partir de um objeto de domínio"""
-        animal_db = self.session.get(AnimalModel, animal.id)
-
-        if not animal_db:
-            return None
-
-        animal_db.species = animal.species.name
-        animal_db.breed = animal.breed
-        animal_db.name = animal.name
-        animal_db.gender = animal.gender.name
-        animal_db.age_months = animal.age_months
-        animal_db.size = animal.size.name
-        animal_db.temperament = json.dumps(animal.temperament)
-        animal_db.status = animal.status.name
-
-        self.session.commit()
-        self.session.refresh(animal_db)
-        return animal_db
-
-    # ---- Delete ----
-    def delete_by_id(self, id: int) -> bool:
-        animal_db = self.session.get(AnimalModel, id)
-
-        if not animal_db:
-            return False
-
-        self.session.delete(animal_db)
-        self.session.commit()
-        return True
