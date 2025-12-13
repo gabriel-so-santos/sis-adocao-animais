@@ -1,7 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from enum import Enum
+from datetime import datetime, timezone
 from domain.animals.animal_status import AnimalStatus
-from domain.exeptions import InvalidStatusTransitionError
+from domain.exceptions import InvalidStatusTransitionError
 
 class Species(Enum):
     CAT = "CAT"
@@ -17,10 +18,11 @@ class Size(Enum):
     LARGE = "LARGE"
 
 class Animal(ABC):
-    """Classe abstrata que representa um animal registrado no sistema.
+    """
+    Classe abstrata que representa um animal registrado no sistema.
 
     Attributes:
-        _id (str): Identificador único do animal.
+        id (str): Identificador único do animal.
         species (str): Espécie do animal (ex.: "Gato", "Cachorro").
         breed (str): Raça do animal.
         name (str): Nome do animal.
@@ -52,6 +54,9 @@ class Animal(ABC):
         self.temperament = temperament or []
         self.status = status
 
+    def __str__(self):
+        return f"{self.name}, {self.species_format()} {self.breed}"
+
     def species_format(self):
         if self.gender == Gender.FEMALE:
             return {
@@ -79,7 +84,7 @@ class Animal(ABC):
         }.get(self.size.name)
     
     def temperament_format(self):
-        return ", ".join(item.strip().capitalize() for item in self.temperament)
+        return ", ".join(item for item in self.temperament)
     
     def status_format(self):
         return {
@@ -90,6 +95,10 @@ class Animal(ABC):
             "QUARANTINE": "Em Quarentena",
             "UNADOPTABLE": "Indisponível"
         }.get(self.status.name)
+    
+    @abstractmethod
+    def extra_info(self):
+        pass
     
     # -------------------------- PROPERTIES --------------------------
 
@@ -120,8 +129,7 @@ class Animal(ABC):
             raise TypeError("breed deve ser uma string não vazia.")
         if not v.strip():
             raise ValueError("breed deve ser uma string não vazia.")
-        self._breed = v
-
+        self._breed = v.strip().capitalize()
 
     # ---- Name ----
     @property
@@ -134,7 +142,7 @@ class Animal(ABC):
             raise TypeError("name deve ser uma string não vazia.")
         if not v.strip():
             raise ValueError("name deve ser uma string não vazia.")
-        self._name = v
+        self._name = v.strip().capitalize()
 
     # ---- Gender ----
     @property
@@ -182,7 +190,8 @@ class Animal(ABC):
             raise TypeError("temperament deve ser uma lista.")
         if not all(isinstance(item, str) for item in v):
             raise TypeError("temperament deve conter apenas strings.")
-        self._temperament = v
+        
+        self._temperament = [item.strip().capitalize() for item in v if item.strip()]
 
     # ---- Status ----
     @property

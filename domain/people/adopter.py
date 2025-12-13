@@ -1,11 +1,14 @@
-from enum import Enum, auto
+from enum import Enum
+from datetime import datetime
+
 from domain.people.person import Person
-from domain.exeptions import PolicyNotMetError
+
+from domain.exceptions import PolicyNotMetError
 import json
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
-    
+
 minimum_age =  settings["policies"]["minimum_adopter_age"]
 
 class HousingType(Enum):
@@ -24,19 +27,22 @@ class Adopter(Person):
         has_children_at_home (bool): Indica se há crianças na residência.
         has_other_animals (bool): Indica se já existem outros animais na casa.
     """
-
+    
     def __init__(
         self,
-        id: int,
         name: str,
         age: int,
+
         housing_type: HousingType,
         usable_area: float,
-        has_pet_experience: bool = False,
-        has_children_at_home: bool = False,
-        has_other_animals: bool = False
+        has_pet_experience: bool,
+        has_children_at_home: bool,
+        has_other_animals: bool,
+
+        id: int,
+        timestamp: datetime
     ):
-        super().__init__(id=id, name=name, age=age)
+        super().__init__(name=name, age=age, id=id, timestamp=timestamp)
 
         self.housing_type = housing_type
         self.usable_area = usable_area
@@ -44,14 +50,6 @@ class Adopter(Person):
         self.has_children_at_home = has_children_at_home
         self.has_other_animals = has_other_animals
 
-    def compatibility_rate(self) -> float:
-        """Calcula o score de compatibilidade entre o adotante e um animal.
-        ...
-
-        Returns:
-            float: Valor entre 0 e 100 representando o nível de compatibilidade.
-        """
-        pass
 
     def has_pet_experience_format(self):
         return "Sim" if self.has_pet_experience else "Não"

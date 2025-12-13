@@ -1,13 +1,16 @@
+from datetime import datetime
 from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
+
 from domain.mixins.vaccinable_mixin import  VaccinableMixin
 from domain.mixins.trainable_mixin import TrainableMixin
+
+from typing import override
 
 class Dog(VaccinableMixin, TrainableMixin, Animal):
     """Cachorro com características específicas."""
     html_icon = "fa-solid fa-dog"
 
     def __init__(self,
-        id: int,
         species: Species,
         breed: str,
         name: str,
@@ -16,21 +19,27 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
         size: Size,
         temperament: list[str] | None,
         status: AnimalStatus,
+        needs_walk: bool,
 
-        needs_walk: bool
+        id: int = None,
+        timestamp: datetime | str = None,
         ):
 
         super().__init__(
-            id, species, breed, name, gender, age_months, size, temperament, status
+            id, species, breed, name, gender, age_months, size, temperament, status, timestamp
         )
         self.needs_walk = needs_walk
 
+    @override
     def extra_info(self):
         return f"Precisa de passeio?: {'Sim' if self.needs_walk else 'Não'}"
     
     def needs_walk_format(self):
         return 'Sim' if self.needs_walk else 'Não'
 
+    # -------------------------- PROPERTIES --------------------------
+
+    # ---- needs_walk ----
     @property
     def needs_walk(self) -> bool:
         return self.__needs_walk
@@ -40,16 +49,3 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
         if not isinstance(v, bool):
             raise TypeError("needs_walk deve ser um booleano.")
         self.__needs_walk = v
-
-    def __str__(self):
-        return (
-            f"Nome: {self.name}\n"
-            f"Espécie: {self.species_format()}\n"
-            f"Raça: {self.breed}\n"
-            f"Sexo: {self.gender_format()}\n"
-            f"Idade: {self.age_months} meses\n"
-            f"Porte: {self.size_format()}\n"
-            f"Temperamento: {self.temperament_format()}\n"
-            f"Status atual: {self.status_format()}\n"
-            f"{self.extra_info()}"
-        )

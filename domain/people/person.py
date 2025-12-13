@@ -1,18 +1,30 @@
 from abc import ABC
+from datetime import datetime, timezone
 
 class Person(ABC):
     """Classe base abstrata para representar pessoas do sistema.
 
     Attributes:
-        _id (str): Identificador único da pessoa.
+        id (str): Identificador único da pessoa.
         name (str): Nome da pessoa.
         age (int): Idade da pessoa.
+        timestamp (datetime | str): Data e hora do registro da pessoa.
     """
 
-    def __init__(self, id: int, name: str, age: int) -> None:
-        self._id = id
+    def __init__(
+        self,
+        name: str,
+        age: int,
+        id: int,
+        timestamp: datetime
+    ):
         self.name = name
         self.age = age
+        self._id = id
+        self._timestamp = timestamp
+
+    def __str__(self):
+        return f"{self.name}, {self.age} anos"
 
     # -------------------------- PROPERTIES --------------------------
 
@@ -20,6 +32,11 @@ class Person(ABC):
     @property
     def id(self) -> int:
         return self._id
+    
+    # ---- Timestamp ----
+    @property
+    def timestamp(self) -> datetime:
+        return self._timestamp
 
     # ---- Name ----
     @property
@@ -29,10 +46,10 @@ class Person(ABC):
     @name.setter
     def name(self, v: str) -> None:
         if not isinstance(v, str):
-            raise TypeError("name deve ser uma string não vazia.")
+            raise TypeError("name deve ser do tipo str.")
         if not v.strip():
             raise ValueError("name deve ser uma string não vazia.")
-        self._name = v
+        self._name = v.strip().capitalize()
 
     # ---- Age ----
     @property
