@@ -16,7 +16,17 @@
     <!-- Animal Info Card -->
     <div class="details-card">
         <h2 class="section-title">Informações do Animal</h2>
-        <pre>{{ animal }}</pre>
+        <p>
+            <strong>Espécie:</strong> {{ animal.species_format() }}<br>
+            <strong>Raça:</strong> {{ animal.breed }}<br>
+            <strong>Sexo:</strong> {{ animal.gender_format() }}<br>
+            <strong>Idade:</strong> {{ animal.age_months }} meses<br>
+            <strong>Porte:</strong> {{ animal.size_format() }}<br>
+            <strong>Status:</strong> {{ animal.status_format() }}<br>
+            <strong>Temperamento:</strong> {{ animal.temperament }}<br>
+
+            {{ animal.extra_info() }}
+        </p>
     </div>
 
     <!-- Actions -->

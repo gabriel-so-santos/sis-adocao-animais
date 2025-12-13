@@ -9,7 +9,13 @@ from infrastructure.repositories.animal_repo import AnimalRepository
 from domain.people.adopter import Adopter, HousingType
 from infrastructure.repositories.adopter_repo import AdopterRepository
 
-from domain.events.events import EventType, ReservationEvent, AdoptionEvent, VaccineEvent, TrainingEvent
+from domain.adoptions.adoption import Adoption
+from infrastructure.repositories.adoption_repo import AdoptionRepository
+
+from domain.adoptions.reservation_queue import ReservationQueue
+from infrastructure.repositories.reservation_queue_repo import ReservationQueueRepository
+
+from domain.events.events import EventType, VaccineEvent, TrainingEvent
 from infrastructure.repositories.event_repo import EventRepository
 
 with open("settings.json", "r", encoding="utf-8") as f:
@@ -25,13 +31,7 @@ animal_repo = AnimalRepository(session)
 
 @app.route("/animals", methods=["GET", "POST"])
 def animals_list():
-    animals_db = animal_repo.list_all()
-    animals = list()
-    
-    for animal_db in animals_db:
-        animal = animal_repo.to_domain(animal_db)
-        animals.append(animal)
-
+    animals = animal_repo.list_all()
     return render_template("animals_list.html", animals=animals)
 
 @app.route("/animals/new")
@@ -49,48 +49,45 @@ def save_animal():
         if valor:
             temperament.append(valor)
 
+    shared_args = dict(
+        id=None,
+        species = species,
+        breed = request.form["breed"].strip().capitalize(),
+        name = request.form["name"].strip().capitalize(),
+        gender = Gender[request.form["gender"].upper()],
+        age_months = int(request.form["age_months"]),
+        size = Size[request.form["size"].upper()],
+        temperament = temperament,
+        status = AnimalStatus[request.form["status"].upper()]
+    )
+
     if species == Species.CAT:
         from domain.animals.cat import Cat
-
         animal = Cat(
-            id = None,
-            species = species,
-            breed = request.form["breed"].strip().capitalize(),
-            name = request.form["name"].strip().capitalize(),
-            gender = Gender[request.form["gender"].upper()],
-            age_months = int(request.form["age_months"]),
-            size = Size[request.form["size"].upper()],
-            temperament = temperament,
-            status = AnimalStatus[request.form["status"].upper()],
-
+            **shared_args,
             is_hypoallergenic = request.form.get("is_hypoallergenic", "false") == "true"
         )
-
     else:
         from domain.animals.dog import Dog
-
         animal = Dog(
-            id = None,
-            species = species,
-            breed = request.form["breed"].strip().capitalize(),
-            name = request.form["name"].strip().capitalize(),
-            gender = Gender[request.form["gender"].upper()],
-            age_months = int(request.form["age_months"]),
-            size = Size[request.form["size"].upper()],
-            temperament = temperament,
-            status = AnimalStatus[request.form["status"].upper()],
-            
+            **shared_args,
             needs_walk = request.form.get("needs_walk", "false") == "true"
         )
 
-    animal_repo.save(animal)
+    was_saved = animal_repo.save(animal)
+
+    if not was_saved:
+        return render_template(
+            "error.html",
+            err_msg="Este animal já tem registro cadastrado."
+        )
+        
     return redirect(url_for("homepage"))
+
 
 @app.route("/animals/<id>/details", methods=["GET", "POST"])
 def animal_details(id):
-    animal_db = animal_repo.get_by_id(id)
-    animal = animal_repo.to_domain(animal_db)
-
+    animal = animal_repo.get_by(id=id)
     return render_template("animal_details.html", animal=animal)
 
 # -------------------------- ADOPTERS --------------------------
@@ -100,13 +97,7 @@ min_adopter_age = settings["policies"]["minimum_adopter_age"]
 
 @app.route("/adopters", methods=["GET", "POST"])
 def adopters_list():
-    adopters_db = adopter_repo.list_all()
-    adopters = list()
-    
-    for adopter_db in adopters_db:
-        adopter = adopter_repo.to_domain(adopter_db)
-        adopters.append(adopter)
-
+    adopters = adopter_repo.list_all()
     return render_template("adopters_list.html", adopters=adopters)
 
 @app.route("/adopters/new")
@@ -125,56 +116,61 @@ def save_adopter():
                 Você não cumpre as políticas para cadastro de adotantes.
                 A idade mínima para adotantes é {min_adopter_age}."""
             )
-    
+
     if age > 128:
         return render_template(
             "error.html",
             err_msg="Idade fora do limite permitido."
             )
     
-    else:
-        adopter = Adopter(
-            id = None,
-            name = request.form["name"].strip().capitalize(),
-            age = age,
-            housing_type = HousingType[request.form["housing_type"].upper()],
-            usable_area = float(request.form["usable_area"]),
-            has_pet_experience = request.form["has_pet_experience"] == "true",
-            has_children_at_home = request.form["has_children_at_home"] == "true",
-            has_other_animals = request.form["has_other_animals"] == "true"
+    adopter = Adopter(
+        id=None,
+        timestamp=None,
+        name = request.form["name"].strip().capitalize(),
+        age = age,
+        housing_type = HousingType[request.form["housing_type"].upper()],
+        usable_area = float(request.form["usable_area"]),
+        has_pet_experience = request.form["has_pet_experience"] == "true",
+        has_children_at_home = request.form["has_children_at_home"] == "true",
+        has_other_animals = request.form["has_other_animals"] == "true"
+    )
+
+    was_saved = adopter_repo.save(adopter)
+
+    if not was_saved:
+        return render_template(
+            "error.html",
+            err_msg="Este adotante já tem registro cadastrado."
         )
 
-        adopter_repo.save(adopter)
-        return redirect(url_for("homepage"))
+    return redirect(url_for("homepage"))
 
 # -------------------------- EVENTS --------------------------
 
 event_repo = EventRepository(session)
 
-#RESERVATION
+reservation_q_repo = ReservationQueueRepository(session)
+
+adoption_repo = AdoptionRepository(session)
+
+# RESERVATION
 @app.route("/adoptions/reservations")
 def adoption_reservation_list():
-    reservations_db = event_repo.list_by_type(EventType.RESERVATION)
-    reservations = list()
+    reservations = reservation_q_repo.list_all()
 
-    for reservation_db in reservations_db:
-        reservation = event_repo.to_domain(reservation_db)
-        reservations.append(reservation)
-
-    reservations_full = list()
+    reservation_data = list()
     for r in reservations:
-        animal = animal_repo.to_domain(animal_repo.get_by_id(r.animal_id))
-        adopter = adopter_repo.to_domain(adopter_repo.get_by_id(r.adopter_id))
+        animal = animal_repo.get_by(id=r.animal_id)
+        adopter = adopter_repo.get_by(id=r.adopter_id)
 
-        reservations_full.append({
+        reservation_data.append({
                 "id": r.id,
                 "date": r.timestamp,
                 "animal": animal,
                 "adopter": adopter
             })
 
-
-    return render_template("adoption_reservation_list.html", reservations=reservations_full)
+    return render_template("adoption_reservation_list.html", reservations=reservation_data)
 
 @app.route("/adoptions/reservations/new")
 def adoption_reservation():
@@ -188,20 +184,16 @@ def adoption_reservation():
 
     # ANIMAL
     if animal_id:
-        selected_animal_db = animal_repo.get_by_id(animal_id)
-        selected_animal = animal_repo.to_domain(selected_animal_db)
+        selected_animal = animal_repo.get_by(animal_id)
     else:
-        animals_db = animal_repo.list_all()
-        animals = [animal_repo.to_domain(a) for a in animals_db]
-
+        animals = animal_repo.list_all()
+        
     # ADOPTER
     if adopter_id:
-        selected_adopter_db = adopter_repo.get_by_id(adopter_id)
-        selected_adopter = adopter_repo.to_domain(selected_adopter_db)
+        selected_adopter = adopter_repo.get_by(adopter_id)
     else:
-        adopters_db = adopter_repo.list_all()
-        adopters = [adopter_repo.to_domain(a) for a in adopters_db]
-
+        adopters = adopter_repo.list_all()
+    
     return render_template(
         "adoption_reservation.html",
         animals=animals,
@@ -215,60 +207,57 @@ def save_adoption_reservation():
     animal_id = int(request.form["animal_id"])
     adopter_id = int(request.form["adopter_id"])
 
-    animal_repo.update_status(id=animal_id, new_status=AnimalStatus.RESERVED)
-    reservation= ReservationEvent(
-        id=None,
-        animal_id=animal_id,
-        timestamp=None,
-        adopter_id=adopter_id,
+    animal_repo.update_status(
+        id=animal_id,
+        new_status=AnimalStatus.RESERVED
     )
-    event_repo.save(reservation)
+
+    reservation = ReservationQueue(
+        animal_id=animal_id,
+        adopter_id=adopter_id,
+        compatibility_rate=50,
+    )
+    reservation_q_repo.save(reservation)
 
     return redirect(url_for("adoption_reservation_list"))
 
+# ADOPTION
 @app.route("/adoptions/reservations/confirm")
 def confirm_adoption():
-    id = request.args.get("id")
+    reservation_id = request.args.get("id")
 
-    reservation_db = event_repo.get_by_id(id)
-    reservation = event_repo.to_domain(reservation_db)
-
+    reservation = reservation_q_repo.get_by(id=reservation_id)
     animal_id = reservation.animal_id
     adopter_id = reservation.adopter_id
 
-    saved_reservations = event_repo.list_by_type(
-        event_type=EventType.RESERVATION,
-        animal_id=animal_id
+    reservation_q_repo.clear_queue(animal_id=animal_id)
+
+    animal_repo.update_status(
+        id=animal_id,
+        new_status=AnimalStatus.ADOPTED
     )
 
-    for r in saved_reservations:
-        event_repo.delete_by_id(r.id)
-
-    animal_repo.update_status(id=animal_id, new_status=AnimalStatus.ADOPTED)
-    adoption = AdoptionEvent(
-        id=None,
+    adoption = Adoption(
         animal_id=animal_id,
-        timestamp=None,
         adopter_id=adopter_id,
-        fee=0
+        fee=0,
     )
-    event_repo.save(adoption)
+    adoption_repo.save(adoption)
 
     return redirect(url_for("adoption_reservation_list"))
 
 @app.route("/adoptions/reservations/cancel")
 def cancel_reservation():
-    id = request.args.get("id")
+    reservation_id = request.args.get("id")
+    reservation_q_repo.delete_by(id=reservation_id)
 
-    event_repo.delete_by_id(id)
     return redirect(url_for("adoption_reservation_list"))
 
-#VACCINE
+# VACCINE
 @app.route("/animals/<animal_id>/vaccine/new")
 def vaccine_registration(animal_id):
 
-    animal_db = animal_repo.get_by_id(animal_id)
-    animal = animal_repo.to_domain(animal_db)
+    animal = animal_repo.get_by(animal_id)
 
     return render_template("vaccine_registration.html", animal=animal)
 
@@ -289,12 +278,11 @@ def save_vaccine(animal_id):
 
     return redirect(url_for("animal_details", id=animal_id))
 
-#TRAINING
+# TRAINING
 @app.route("/animals/<animal_id>/training/new")
 def training_registration(animal_id):
 
-    animal_db = animal_repo.get_by_id(animal_id)
-    animal = animal_repo.to_domain(animal_db)
+    animal = animal_repo.get_by(animal_id)
 
     return render_template("training_registration.html", animal=animal)
 
