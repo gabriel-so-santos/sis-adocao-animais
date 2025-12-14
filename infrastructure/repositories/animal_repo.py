@@ -43,8 +43,8 @@ class AnimalRepository(BaseRepository):
             age_months=animal_model.age_months,
             size=Size[animal_model.size],               # Enum
             temperament=json.loads(animal_model.temperament),
-            status=AnimalStatus[animal_model.status]    # Enum
-
+            status=AnimalStatus[animal_model.status],   # Enum
+            timestamp=animal_model.timestamp,
         )
 
         if species == Species.CAT:   
@@ -91,6 +91,7 @@ class AnimalRepository(BaseRepository):
             size=animal.size.value,                     # Enum       
             temperament=json.dumps(animal.temperament),   
             status=animal.status.value,                 # Enum
+            timestamp = animal.timestamp,
 
             extra_data=extra_data
         )

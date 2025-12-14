@@ -10,7 +10,7 @@ from domain.events.events import Event, EventType
 class EventRepository(BaseRepository):
     
     def __init__(self, session):
-        super().__init__(session, EventModel)
+        super().__init__(session, model_class=EventModel)
 
     @override
     def _to_domain(self, event_model: EventModel) -> Event:
@@ -84,8 +84,7 @@ class EventRepository(BaseRepository):
         )
         return event_model
 
-    @override
-    def list_all(self, event_type: EventType = None, animal_id: int = None) -> list[Event]:
+    def list_by(self, event_type: EventType = None, animal_id: int = None) -> list[Event]:
         """
         Recupera todos os eventos registrados no banco, com possibilidade de filtragem
         por tipo de evento e/ou identificador do animal associado.

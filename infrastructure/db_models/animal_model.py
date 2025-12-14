@@ -1,5 +1,5 @@
 from sqlalchemy import(
-    UniqueConstraint, Column, String, Integer, DateTime, JSON
+    UniqueConstraint, Column, String, Integer, DateTime, func, JSON
 )
 from sqlalchemy.orm import relationship
 from infrastructure.database.db_connection import Base
@@ -24,6 +24,7 @@ class AnimalModel(Base):
     size = Column(String, nullable=False)
     temperament = Column(String, nullable=False)
     status = Column(String, nullable=False)
+    timestamp = Column(DateTime, nullable=False, server_default=func.now())
 
     extra_data = Column(JSON, nullable=True, default={})
 

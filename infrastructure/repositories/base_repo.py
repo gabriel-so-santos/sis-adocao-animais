@@ -146,7 +146,7 @@ class BaseRepository(ABC):
 
         return [self._to_domain(model_obj) for model_obj in models]
 
-    def get_by(self, id: int) -> Any | None:
+    def get_by_id(self, id: int) -> Any | None:
         """
         Obtém um único registro com base no seu identificador único.
 

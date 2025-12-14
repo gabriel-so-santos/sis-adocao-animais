@@ -1,13 +1,14 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from domain.people.adopter import Adopter
 
 class EventType(Enum):
-    RESERVATION = "RESERVATION" 
     ADOPTION = "ADOPTION"
     RETURN = "RETURN"
     TRAINING = "TRAINING"
-    VACCINE ="VACCINE" 
+    VACCINE = "VACCINE"
+    QUARENTINE = "QUARENTINE" 
 
 @dataclass
 class Event:
@@ -17,6 +18,15 @@ class Event:
 
     event_type: EventType = field(init=False, default=None)
 
+    def __lt__(self, e: "Event") -> bool:
+
+        if self.timestamp != e.timestamp:
+            return self.timestamp < e.timestamp
+        
+        if self.id != e.id:
+            return self.id < e.id
+
+        return self.event_type.value < e.event_type.value
 
 # ---- Eventos específicos ----
 
@@ -39,15 +49,8 @@ class VaccineEvent(Event):
 
 
 @dataclass
-class ReservationEvent(Event):
-    adopter_id: int
-
-    event_type: EventType = field(init=False, default=EventType.RESERVATION)
-
-
-@dataclass
 class AdoptionEvent(Event):
-    adopter_id: int
+    adopter: Adopter
     fee: float
 
     event_type: EventType = field(init=False, default=EventType.ADOPTION)
@@ -56,6 +59,11 @@ class AdoptionEvent(Event):
 @dataclass
 class ReturnEvent(Event):
     adoption_id: int
-    notes: str
+    reason: str
 
     event_type: EventType = field(init=False, default=EventType.RETURN)
+
+@dataclass
+class QuarentineEvent(Event):
+
+    event_type: EventType = field(init=False, default=EventType.QUARENTINE)

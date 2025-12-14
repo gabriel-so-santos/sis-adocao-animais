@@ -1,8 +1,5 @@
 from datetime import datetime
-from domain.events.events import (
-    TrainingEvent, VaccineEvent, ReservationEvent,
-    AdoptionEvent, ReturnEvent, Event, EventType
-)
+from domain.events.events import *
 
 class EventConverter:
 
@@ -37,10 +34,6 @@ class EventConverter:
             kwargs["notes"] = str(extra_data.get("notes", ""))
             return TrainingEvent(**kwargs)
 
-        if event_type == EventType.RESERVATION:
-            kwargs["adopter_id"] = int(extra_data["adopter_id"])
-            return ReservationEvent(**kwargs)
-
         if event_type == EventType.ADOPTION:
             kwargs["adopter_id"] = int(extra_data["adopter_id"])
             kwargs["fee"] = float(extra_data["fee"])
@@ -50,6 +43,9 @@ class EventConverter:
             kwargs["adoption_id"] = int(extra_data["adoption_id"])
             kwargs["notes"] = str(extra_data.get("notes", ""))
             return ReturnEvent(**kwargs)
+        
+        if event_type == EventType.QUARENTINE:
+            return QuarentineEvent(**kwargs)
 
         # Evento desconhecido → retorna evento genérico
         return Event(**kwargs)

@@ -18,16 +18,16 @@
         <h2 class="section-title">Informações do Animal</h2>
         <p>
             <strong>Espécie:</strong> {{ animal.species_format() }}<br>
-            <strong>Raça:</strong> {{ animal.breed }}<br>
-            <strong>Sexo:</strong> {{ animal.gender_format() }}<br>
-            <strong>Idade:</strong> {{ animal.age_months }} meses<br>
-            <strong>Porte:</strong> {{ animal.size_format() }}<br>
-            <strong>Status:</strong> {{ animal.status_format() }}<br>
-            {{ animal.extra_info() | safe }}<br>
-
-            <br><strong>Temperamento:</strong><br>
-            <i>{{ animal.temperament_format() }}</i>
+            <br><strong>Raça:</strong> {{ animal.breed }}<br>
+            <br><strong>Sexo:</strong> {{ animal.gender_format() }}<br>
+            <br><strong>Idade:</strong> {{ animal.age_months }} meses<br>
+            <br><strong>Porte:</strong> {{ animal.size_format() }}<br>
+            <br><strong>Status:</strong> {{ animal.status_format() }}<br>
+            <br><strong>Cadastrado em:</strong> {{ animal.timestamp.strftime("%d/%m/%Y %H:%M") }}<br>
+            <br>{{ animal.extra_info() | safe }}<br>
+            <br><strong>Temperamento:</strong> <i>{{ animal.temperament_format() }}</i>
         </p>
+
     </div>
 
     <!-- Actions -->
@@ -49,7 +49,7 @@
                 </a>
 
                 <a href="{{ url_for('change_animal_status', id=animal.id, status='UNADOPTABLE') }}" class="details-button danger">
-                    <i class="fa-solid fa-xmark"></i></i> Indisponível
+                    <i class="fa-solid fa-ban"></i> Indisponível
                 </a>
 
             {% elif animal.status.name == "QUARANTINE" %}
@@ -63,7 +63,7 @@
                 </a>
 
                 <a href="{{ url_for('change_animal_status', id=animal.id, status='UNADOPTABLE') }}" class="details-button danger">
-                    <i class="fa-solid fa-xmark"></i></i> Indisponível
+                    <i class="fa-solid fa-ban"></i> Indisponível
                 </a>
             
             {% endif %}
@@ -99,9 +99,15 @@
 
             {% if animal.is_trainable %}
                 <a href="{{ url_for('training_registration', animal_id=animal.id) }}" class="details-button outline">
-                    <i class="fa-solid fa-bone"></i> Registrar Treinamento
+                    <i class="fa-solid fa-dumbbell"></i> Registrar Treinamento
                 </a>
             {% endif %}
+        </div>
+
+        <div class="details-buttons-bottom">
+            <a href="{{ url_for('animal_timeline', animal_id=animal.id) }}" class="details-button outline">
+                <i class="fa-solid fa-hourglass-half"></i> Ver Histórico de Eventos
+            </a>
         </div>
 
     </div>

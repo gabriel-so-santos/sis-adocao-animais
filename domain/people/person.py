@@ -15,8 +15,8 @@ class Person(ABC):
         self,
         name: str,
         age: int,
-        id: int,
-        timestamp: datetime
+        id: int = None,
+        timestamp: datetime = None
     ):
         self.name = name
         self.age = age

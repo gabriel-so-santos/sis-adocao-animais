@@ -16,21 +16,14 @@ class AdoptionReturn:
         self,
         adoption_id: int,
         reason: str,
-        id: int = None,
         timestamp: datetime | str = datetime.now(timezone.utc)
     ):
-
         self.__id = id
         self.adoption_id = adoption_id
         self.reason = reason
         self.timestamp = timestamp
 
     # -------------------------- PROPERTIES --------------------------
-
-    # ---- ID ----
-    @property
-    def id(self) -> int:
-        return self.__id
 
     # ---- Adoption ID ----
     @property

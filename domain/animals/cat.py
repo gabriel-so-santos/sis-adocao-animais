@@ -8,7 +8,6 @@ class Cat(VaccinableMixin, Animal):
     html_icon = "fa-solid fa-cat"
 
     def __init__(self,
-        id: int,
         species: Species,
         breed: str,
         name: str,
@@ -17,22 +16,16 @@ class Cat(VaccinableMixin, Animal):
         size: Size,
         temperament: list[str],
         status: AnimalStatus,
-
         is_hypoallergenic: bool,
-
+        id: int = None,
+        timestamp: datetime = None
         ):
 
         super().__init__(
-            id, species, breed, name, gender, age_months, size, temperament, status
+            species, breed, name, gender, age_months, size, temperament, status, id, timestamp
         )
-        self.is_hypoallergenic = is_hypoallergenic
 
-    @override
-    def extra_info(self):
-        return f"<strong>É Hipoalergênico?:</strong> {'Sim' if self.is_hypoallergenic else 'Não'}"
-    
-    def is_hypoallergenic_format(self):
-        return 'Sim' if self.is_hypoallergenic else 'Não'
+        self.is_hypoallergenic = is_hypoallergenic
     
     # -------------------------- PROPERTIES --------------------------
 
@@ -46,3 +39,12 @@ class Cat(VaccinableMixin, Animal):
         if not isinstance(v, bool):
             raise TypeError("is_hypoallergenic deve ser um booleano.")
         self.__is_hypoallergenic = v
+
+    # -------------------------- FORMAT METHODS --------------------------
+    
+    @override
+    def extra_info(self):
+        return f"<strong>É Hipoalergênico?:</strong> {'Sim' if self.is_hypoallergenic else 'Não'}"
+    
+    def is_hypoallergenic_format(self):
+        return 'Sim' if self.is_hypoallergenic else 'Não'

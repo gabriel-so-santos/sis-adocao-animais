@@ -24,13 +24,12 @@ class AdopterRepository(BaseRepository):
             id=adopter_model.id,
             name=adopter_model.name,
             age=adopter_model.age,
-            timestamp=adopter_model.timestamp,
-
             housing_type=HousingType[adopter_model.housing_type],    
             usable_area=adopter_model.usable_area,
             has_pet_experience=adopter_model.has_pet_experience,
             has_children_at_home=adopter_model.has_children_at_home,
-            has_other_animals=adopter_model.has_other_animals
+            has_other_animals=adopter_model.has_other_animals,
+            timestamp=adopter_model.timestamp
         )
         return adopter
     
@@ -47,13 +46,13 @@ class AdopterRepository(BaseRepository):
         """
         adopter_model = AdopterModel(
             id=adopter.id,
-            timestamp=adopter.timestamp,
             name=adopter.name,
             age=adopter.age,
             housing_type=adopter.housing_type.value,
             usable_area=adopter.usable_area,
             has_pet_experience=adopter.has_pet_experience,
             has_children_at_home=adopter.has_children_at_home,
-            has_other_animals=adopter.has_other_animals
+            has_other_animals=adopter.has_other_animals,
+            timestamp=adopter.timestamp
         )
         return adopter_model

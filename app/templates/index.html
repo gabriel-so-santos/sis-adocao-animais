@@ -11,7 +11,7 @@
     <h1 class="home-title"><i class="fa-solid fa-shield-dog"></i> Sistema de Adoção de Animais</h1>
 
     <p class="home-subtitle">
-        Bem-vindo ao sistema! Escolha uma das opções abaixo para começar.
+        Página inicial do sistema. Utilize o menu abaixo para acessar as funcionalidades disponíveis.
     </p>
 
     <div class="card-grid">
@@ -24,22 +24,16 @@
         </div>
 
         <div class="home-card">
-            <h3><i class="fa-solid fa-user-plus"></i> Cadastrar <br> Adotante</h3>
-            <p>Registre um novo adotante interessado em adotar.</p>
-            <a href="{{ url_for('adopter_registration') }}" class="home-button">Cadastrar</a>
-        </div>
-
-        <div class="home-card">
-            <h3><i class="fa-solid fa-calendar-plus"></i> Cadastrar <br> Reserva</h3>
-            <p>Vincule um adontante a um animal.</p>
-            <a href="{{ url_for('adoption_reservation') }}" class="home-button">Cadastrar</a>
+            <h3><i class="fa-solid fa-paw"></i> Animais <br> Cadastrados</h3>
+            <p>Veja todos os animais disponíveis para adoção.</p>
+            <a href="{{ url_for('animals_list') }}" class="home-button">Ver Lista</a>
         </div>
 
         <!-- Row 2 -->
         <div class="home-card">
-            <h3><i class="fa-solid fa-paw"></i> Animais <br> Cadastrados</h3>
-            <p>Veja todos os animais disponíveis para adoção.</p>
-            <a href="{{ url_for('animals_list') }}" class="home-button">Ver Lista</a>
+            <h3><i class="fa-solid fa-user-plus"></i> Cadastrar <br> Adotante</h3>
+            <p>Registre um novo adotante interessado em adotar.</p>
+            <a href="{{ url_for('adopter_registration') }}" class="home-button">Cadastrar</a>
         </div>
 
         <div class="home-card">
@@ -48,16 +42,29 @@
             <a href="{{ url_for('adopters_list') }}" class="home-button">Ver Lista</a>
         </div>
 
+        <!-- Row 3 -->
+        <div class="home-card">
+            <h3><i class="fa-solid fa-calendar-plus"></i> Cadastrar <br> Reserva</h3>
+            <p>Vincule um adontante a um animal.</p>
+            <a href="{{ url_for('adoption_reservation') }}" class="home-button">Cadastrar</a>
+        </div>
+
         <div class="home-card">
             <h3><i class="fa-solid fa-calendar-check"></i> Reservas <br> Ativas</h3>
             <p>Veja as reservas em andamento.</p>
             <a href="{{ url_for('adoption_reservation_list') }}" class="home-button">Ver Lista</a>
         </div>
 
-        <!-- Row 3 -->
+        <!-- Row 4 -->
         <div class="home-card">
             <h3><i class="fa-solid fa-arrows-rotate"></i> Adoções <br> & Devoluções </h3>
             <p>Veja todas as adoções e devoluções registradas.</p>
+            <a href="{{ url_for('adoptions_list') }}" class="home-button">Ver Lista</a>
+        </div>
+
+        <div class="home-card">
+            <h3><i class="fa-brands fa-github"></i> Wiki <br> GitHub </h3>
+            <p>Wiki deste projeto.</p>
             <a href="{{ url_for('adoptions_list') }}" class="home-button">Ver Lista</a>
         </div>
 

@@ -39,32 +39,16 @@ class Adopter(Person):
         has_children_at_home: bool,
         has_other_animals: bool,
 
-        id: int,
-        timestamp: datetime
+        id: int = None,
+        timestamp: datetime = None
     ):
-        super().__init__(name=name, age=age, id=id, timestamp=timestamp)
+        super().__init__(name, age, id, timestamp)
 
         self.housing_type = housing_type
         self.usable_area = usable_area
         self.has_pet_experience = has_pet_experience
         self.has_children_at_home = has_children_at_home
         self.has_other_animals = has_other_animals
-
-
-    def has_pet_experience_format(self):
-        return "Sim" if self.has_pet_experience else "Não"
-
-    def has_children_at_home_format(self):
-        return "Sim" if self.has_children_at_home else "Não"
-
-    def has_other_animals_format(self):
-        return "Sim" if self.has_other_animals else "Não"
-
-    def housing_type_format(self):
-        return {
-            "HOUSE": "Casa",
-            "APARTMENT": "Apartamento"
-        }.get(self.housing_type.name)
         
     # -------------------------- PROPERTIES --------------------------
 
@@ -141,3 +125,20 @@ class Adopter(Person):
         if not isinstance(v, bool):
             raise TypeError("has_other_animals deve ser um booleano.")
         self.__has_other_animals = v
+
+    # -------------------------- FORMAT METHODS --------------------------
+    
+    def has_pet_experience_format(self):
+        return "Sim" if self.has_pet_experience else "Não"
+
+    def has_children_at_home_format(self):
+        return "Sim" if self.has_children_at_home else "Não"
+
+    def has_other_animals_format(self):
+        return "Sim" if self.has_other_animals else "Não"
+
+    def housing_type_format(self):
+        return {
+            "HOUSE": "Casa",
+            "APARTMENT": "Apartamento"
+        }.get(self.housing_type.name)

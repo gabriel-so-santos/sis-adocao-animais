@@ -507,6 +507,46 @@ select:invalid {
     box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
 }
 
+/* =========================================================
+   ANIMAL TIMELINE PAGE
+========================================================= */
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.timeline-content {
+    background: #1d1d1d;
+    padding: 1.2rem;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    width: 100%;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.timeline-text {
+    color: #ddd;
+    line-height: 1.4rem;
+}
+
+.timeline-title {
+    color: #f0c27b;
+    margin: 6px 0 10px;
+    font-size: 1.2rem;
+}
+
 /* ====== Adoption Page Styling ====== */
 
 .readonly-box {

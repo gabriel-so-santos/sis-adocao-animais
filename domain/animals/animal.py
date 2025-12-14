@@ -34,17 +34,17 @@ class Animal(ABC):
     """
     def __init__(
         self,
-        id: int,
         species: Species,
         breed: str,
         name: str,
         gender: Gender,
         age_months: int,
         size: Size,
-        temperament: list[str] | None,
-        status: AnimalStatus = AnimalStatus.AVAILABLE,
+        temperament: list[str],
+        status: AnimalStatus,
+        id: int = None,
+        timestamp: datetime = None
     ):
-        self._id = id
         self.species = species
         self.breed = breed
         self.name = name
@@ -53,52 +53,12 @@ class Animal(ABC):
         self.size = size
         self.temperament = temperament or []
         self.status = status
+        self._id = id
+        self._timestamp = timestamp
+
 
     def __str__(self):
         return f"{self.name}, {self.species_format()} {self.breed}"
-
-    def species_format(self):
-        if self.gender == Gender.FEMALE:
-            return {
-                "CAT": "Gata",
-                "DOG": "Cadela",
-            }.get(self.species.name)
-        
-        else:
-            return {
-                "CAT": "Gato",
-                "DOG": "Cachorro",
-            }.get(self.species.name)
-    
-    def gender_format(self):
-        return {
-            "MALE": "Macho",
-            "FEMALE": "Fêmea",
-        }.get(self.gender.name)
-    
-    def size_format(self):
-        return {
-            "SMALL": "Pequeno",
-            "MEDIUM": "Médio",
-            "LARGE": "Grande"
-        }.get(self.size.name)
-    
-    def temperament_format(self):
-        return ", ".join(item for item in self.temperament)
-    
-    def status_format(self):
-        return {
-            "AVAILABLE": "Disponível",
-            "RESERVED": "Reservado",
-            "ADOPTED": "Adotado",
-            "RETURNED": "Devolvido",
-            "QUARANTINE": "Em Quarentena",
-            "UNADOPTABLE": "Indisponível"
-        }.get(self.status.name)
-    
-    @abstractmethod
-    def extra_info(self):
-        pass
     
     # -------------------------- PROPERTIES --------------------------
 
@@ -106,6 +66,11 @@ class Animal(ABC):
     @property
     def id(self) -> str:
         return self._id
+    
+    # ---- Timestamp ----
+    @property
+    def timestamp(self) -> datetime:
+        return self._timestamp
 
     # ---- Species ----
     @property
@@ -210,3 +175,48 @@ class Animal(ABC):
                 raise InvalidStatusTransitionError(f"Transição inválida! {current} -> {v}")
 
         self._status = v
+
+    # -------------------------- FORMAT METHODS --------------------------
+
+    @abstractmethod
+    def extra_info(self):
+        pass
+
+    def species_format(self):
+        if self.gender == Gender.FEMALE:
+            return {
+                "CAT": "Gata",
+                "DOG": "Cadela",
+            }.get(self.species.name)
+        
+        else:
+            return {
+                "CAT": "Gato",
+                "DOG": "Cachorro",
+            }.get(self.species.name)
+    
+    def gender_format(self):
+        return {
+            "MALE": "Macho",
+            "FEMALE": "Fêmea",
+        }.get(self.gender.name)
+    
+    def size_format(self):
+        return {
+            "SMALL": "Pequeno",
+            "MEDIUM": "Médio",
+            "LARGE": "Grande"
+        }.get(self.size.name)
+    
+    def temperament_format(self):
+        return ", ".join(item for item in self.temperament)
+    
+    def status_format(self):
+        return {
+            "AVAILABLE": "Disponível",
+            "RESERVED": "Reservado",
+            "ADOPTED": "Adotado",
+            "RETURNED": "Devolvido",
+            "QUARANTINE": "Em Quarentena",
+            "UNADOPTABLE": "Indisponível"
+        }.get(self.status.name)

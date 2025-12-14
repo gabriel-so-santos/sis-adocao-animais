@@ -52,3 +52,23 @@ class AdoptionReturnRepository(BaseRepository):
 
         result = query.first()
         return result.timestamp if result else None
+    
+    def get_return_reason(self, adoption_id: int) -> str | None:
+        """
+        Retorna o motivo (reason) da devolução associada a uma adoção.
+
+        Args:
+            adoption_id (int): Identificador da adoção.
+
+        Returns:
+            str | None: Texto com o motivo da devolução, caso exista;
+            None se não houver devolução registrada.
+        """
+        result = (
+            self.session
+            .query(AdoptionReturnModel.reason)
+            .filter_by(adoption_id=adoption_id)
+            .first()
+        )
+
+        return result.reason if result else None

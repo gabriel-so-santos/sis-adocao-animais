@@ -18,8 +18,10 @@ from infrastructure.repositories.reservation_queue_repo import ReservationQueueR
 from domain.adoptions.adoption_return import AdoptionReturn
 from infrastructure.repositories.adoption_return_repo import AdoptionReturnRepository
 
-from domain.events.events import EventType, VaccineEvent, TrainingEvent
+from domain.events.events import EventType, VaccineEvent, TrainingEvent, QuarentineEvent
 from infrastructure.repositories.event_repo import EventRepository
+
+from services.timeline_service import TimelineService
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
@@ -89,7 +91,7 @@ def save_animal():
 
 @app.route("/animals/<id>/details", methods=["GET", "POST"])
 def animal_details(id):
-    animal = animal_repo.get_by(id=id)
+    animal = animal_repo.get_by_id(id=id)
     return render_template("animal_details.html", animal=animal)
 
 @app.route("/animals/<id>/details/change-status/<status>", methods=["GET", "POST"])
@@ -97,7 +99,34 @@ def change_animal_status(id, status):
     new_status = AnimalStatus[status.upper()]
 
     animal_repo.update_status(id, new_status)
+
+    if new_status == AnimalStatus.QUARANTINE:
+        quarentine_event = QuarentineEvent(
+            id=None,
+            animal_id=id,
+            timestamp=None
+        )
+        event_repo.save(quarentine_event)
+
     return redirect(url_for("animal_details", id=id))
+
+@app.route("/animals/<animal_id>/details/timeline")
+def animal_timeline(animal_id):
+    animal = animal_repo.get_by_id(animal_id)
+
+    timeline = TimelineService(
+        adoption_repo=adoption_repo,
+        adoption_return_repo=adoption_return_repo,
+        event_repo=event_repo,
+        adopter_repo=adopter_repo
+    )
+    events = timeline.build_animal_timeline(animal_id=animal_id)
+
+    return render_template(
+        "animal_timeline.html",
+        animal=animal,
+        events=events
+    )
 
 # -------------------------- ADOPTERS --------------------------
 
@@ -171,8 +200,8 @@ def adoption_reservation_list():
 
     reservation_data = list()
     for r in reservations:
-        animal = animal_repo.get_by(id=r.animal_id)
-        adopter = adopter_repo.get_by(id=r.adopter_id)
+        animal = animal_repo.get_by_id(id=r.animal_id)
+        adopter = adopter_repo.get_by_id(id=r.adopter_id)
 
         reservation_data.append({
                 "id": r.id,
@@ -195,13 +224,13 @@ def adoption_reservation():
 
     # ANIMAL
     if animal_id:
-        selected_animal = animal_repo.get_by(animal_id)
+        selected_animal = animal_repo.get_by_id(animal_id)
     else:
         animals = animal_repo.list_reservable_animals()
         
     # ADOPTER
     if adopter_id:
-        selected_adopter = adopter_repo.get_by(adopter_id)
+        selected_adopter = adopter_repo.get_by_id(adopter_id)
     else:
         adopters = adopter_repo.list_all()
     
@@ -243,7 +272,7 @@ def save_adoption_reservation():
 def confirm_adoption():
     reservation_id = request.args.get("id")
 
-    reservation = reservation_q_repo.get_by(id=reservation_id)
+    reservation = reservation_q_repo.get_by_id(id=reservation_id)
     animal_id = reservation.animal_id
     adopter_id = reservation.adopter_id
 
@@ -279,8 +308,8 @@ def adoptions_list():
     return_data = list()
 
     for a in adoptions:
-        animal = animal_repo.get_by(id=a.animal_id)
-        adopter = adopter_repo.get_by(id=a.adopter_id)
+        animal = animal_repo.get_by_id(id=a.animal_id)
+        adopter = adopter_repo.get_by_id(id=a.adopter_id)
 
         is_active = not adoption_return_repo.has_returned_adoption(a.id)
 
@@ -308,16 +337,15 @@ def adoptions_list():
 @app.route("/adoptions/returns/new")
 def adoption_return_registration():
     animal_id = int(request.args.get("animal_id"))
-    animal = animal_repo.get_by(id=animal_id)
+    animal = animal_repo.get_by_id(id=animal_id)
 
     return render_template("return_registration.html", animal=animal)
 
 @app.route("/adoptions/returns/save", methods=["GET", "POST"])
 def save_adoption_return():
-    print(request.form)
     animal_id = int(request.form["animal_id"])
 
-    adoption = adoption_repo.get_by_animal_id(animal_id)
+    adoption = adoption_repo.get_latest_by_animal(animal_id)
 
     adoption_return = AdoptionReturn(
         adoption_id=adoption.id,
@@ -333,7 +361,7 @@ def save_adoption_return():
 @app.route("/animals/<animal_id>/vaccine/new")
 def vaccine_registration(animal_id):
 
-    animal = animal_repo.get_by(animal_id)
+    animal = animal_repo.get_by_id(animal_id)
 
     return render_template("vaccine_registration.html", animal=animal)
 
@@ -358,7 +386,7 @@ def save_vaccine(animal_id):
 @app.route("/animals/<animal_id>/training/new")
 def training_registration(animal_id):
 
-    animal = animal_repo.get_by(animal_id)
+    animal = animal_repo.get_by_id(animal_id)
 
     return render_template("training_registration.html", animal=animal)
 

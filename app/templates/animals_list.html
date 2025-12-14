@@ -20,7 +20,7 @@
                 <div class="list-card">
 
                     <h3 class="animal-name">
-                        <i class="{{ animal.html_icon }}"></i> {{ animal.name }}
+                        <i class="{{ animal.html_icon }}"></i> {{ animal.name }} | {{ animal.status_format() }}
                     </h3>
 
                     <p class="animal-info">
@@ -29,11 +29,6 @@
                         <strong>Sexo:</strong> {{ animal.gender_format() }}<br>
                         <strong>Idade:</strong> {{ animal.age_months }} meses<br>
                         <strong>Porte:</strong> {{ animal.size_format() }}<br>
-                        <strong>Status:</strong> {{ animal.status_format() }}<br>
-                        {{ animal.extra_info() | safe }}<br>
-
-                        <br><strong>Temperamento:</strong><br>
-                        <i>{{ animal.temperament_format() }}</i>
                     </p>
 
                     <a href="{{ url_for('animal_details', id=animal.id) }}" class="list-button">

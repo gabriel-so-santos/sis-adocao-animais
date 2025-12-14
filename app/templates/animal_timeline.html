@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Histórico do Animal</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+
+    <h1 class="details-title">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        Histórico de Eventos
+    </h1>
+
+    <div class="details-card">
+        <h2 class="section-title">Animal</h2>
+        <p>{{ animal }}</p>
+        <span class="timeline-date">
+            <i class="fa-regular fa-clock"></i> Cadastrado em: {{ animal.timestamp.strftime("%d/%m/%Y %H:%M") }}
+        </span>
+    </div>
+
+    {% if events|length == 0 %}
+        <p class="empty-message">
+            Nenhum evento registrado para este animal.
+        </p>
+    {% else %}
+        <div class="timeline">
+
+            {% for event in events %}
+                <div class="timeline-item">
+
+                    <div class="timeline-content">
+
+                        <span class="timeline-date">
+                            {{ event.timestamp.strftime("%d/%m/%Y %H:%M") }}
+                        </span>
+
+                        <p class="timeline-text">
+
+                            {% if event.event_type.name == "ADOPTION" %}
+                                <h3 class="timeline-title">
+                                    <i class="fa-solid fa-hand-holding-heart"></i> Adoção
+                                </h3>
+                                <strong>Adotante:</strong> {{ event.adopter.name }}<br>
+                                <strong>Taxa:</strong> R$ {{ "%.2f"|format(event.fee) }}
+
+                            {% elif event.event_type.name == "RETURN" %}
+                                <h3 class="timeline-title">
+                                    <i class="fa-solid fa-arrows-turn-to-dots"></i> Devolução
+                                </h3>
+                                <strong>Motivo:</strong> {{ event.reason }}
+
+                            {% elif event.event_type.name == "VACCINE" %}
+                                <h3 class="timeline-title">
+                                    <i class="fa-solid fa-syringe"></i> Vacina
+                                </h3>
+                                <strong>Nome da Vacina:</strong> {{ event.vaccine_name }}<br>
+                                <strong>Veterinário:</strong> {{ event.veterinarian }}
+
+                            {% elif event.event_type.name == "TRAINING" %}
+                                <h3 class="timeline-title">
+                                    <i class="fa-solid fa-dumbbell"></i> Treinamento
+                                </h3>
+                                <strong>Treinador:</strong> {{ event.trainer }}<br>
+                                <strong>Duração:</strong> {{ event.duration_min }} min<br>
+                                <strong>Tipo:</strong> {{ event.training_type }}<br>
+                                <em>{{ event.notes }}</em>
+
+                            {% elif event.event_type.name == "QUARENTINE" %}
+                                <h3 class="timeline-title">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Quarentena
+                                </h3>
+                                Animal colocado em quarentena.
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
