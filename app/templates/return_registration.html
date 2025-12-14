@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Registrar Devolução</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+
+    <h1 class="details-title">Registrar Devolução</h1>
+
+    <!-- Animal info -->
+    <div class="details-card">
+        <h2 class="section-title">Animal</h2>
+        <p>{{ animal }}</p>
+    </div>
+
+    <!-- Return form -->
+    <form action="{{ url_for('save_adoption_return') }}"
+          method="POST"
+          class="form details-card">
+
+        <h2 class="section-title">Informações da Devolução</h2>
+
+        <input type="hidden" name="animal_id" value="{{ animal.id }}">
+
+        <!-- Reason -->
+        <label for="reason">Motivo da Devolução:</label>
+        <input type="text" id="reason" name="reason" placeholder="Descreva o motivo da devolução..." required>
+
+        <!-- Submit -->
+        <button type="submit" class="details-button danger" style="margin-top: 20px;">
+            <i class="fa-solid fa-arrows-turn-to-dots"></i> Confirmar Devolução
+        </button>
+    </form>
+
+</div>
+{% endblock %}

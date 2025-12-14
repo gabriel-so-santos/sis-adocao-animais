@@ -406,7 +406,9 @@ select:invalid {
     box-shadow: 0 0 12px rgba(240, 194, 123, 0.7);
 }
 
-/* Details Page */
+/* =========================================================
+   ANIMAL DETAILS PAGE
+========================================================= */
 .details-container {
     max-width: 900px;
     margin: 0 auto;
@@ -443,6 +445,12 @@ select:invalid {
     margin: 20px 0;
 }
 
+.section-title.actions {
+    margin-bottom: 0px;  
+    margin-top: 8px;
+}
+
+
 .details-button {
     padding: 10px 16px;
     border-radius: 10px;
@@ -468,6 +476,20 @@ select:invalid {
     display: flex;
     gap: 20px;          
     justify-content: flex-start;
+}
+
+.details-buttons-retuned {
+    display: flex;
+    gap: 14px;
+    flex-direction: column;
+    align-self: flex-start;
+}
+
+.details-buttons-retuned .details-button {
+    padding: 8px 14px;        
+    font-size: 0.95rem;       
+    border-radius: 8px;
+    width: 200px;
 }
 
 .details-button.outline {

@@ -96,6 +96,18 @@ class AnimalRepository(BaseRepository):
         )
         return animal_model
     
+    def list_reservable_animals(self) -> list[Cat | Dog]:
+        """
+        Retorna todos os animais que podem participar do processo de reserva,
+        ou seja, aqueles com status AVAILABLE ou RESERVED.
+        """
+        reservable = [
+            AnimalStatus.AVAILABLE.value,
+            AnimalStatus.RESERVED.value,
+        ]
+
+        return self.session.query(AnimalModel).filter(AnimalModel.status.in_(reservable)).all()
+    
     @override  
     def update(self, animal: Cat | Dog) -> bool:
         """

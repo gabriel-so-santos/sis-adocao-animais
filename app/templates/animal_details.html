@@ -23,16 +23,56 @@
             <strong>Idade:</strong> {{ animal.age_months }} meses<br>
             <strong>Porte:</strong> {{ animal.size_format() }}<br>
             <strong>Status:</strong> {{ animal.status_format() }}<br>
-            <strong>Temperamento:</strong> {{ animal.temperament }}<br>
+            {{ animal.extra_info() | safe }}<br>
 
-            {{ animal.extra_info() }}
+            <br><strong>Temperamento:</strong><br>
+            <i>{{ animal.temperament_format() }}</i>
         </p>
     </div>
 
     <!-- Actions -->
     <div class="details-actions">
 
+        <div class="details-buttons-retuned">
+            {% if animal.status.name == "RETURNED" %}
+                <h2 class="section-title actions">
+                    <i class="fa-solid fa-arrows-turn-to-dots"></i> Animal Devolvido
+                </h2>
+                <p>Informe o novo status do animal:</p>
+
+                <a href="{{ url_for('change_animal_status', id=animal.id, status='AVAILABLE') }}" class="details-button">
+                    <i class="fa-solid fa-shield-heart"></i> Disponível
+                </a>
+
+                <a href="{{ url_for('change_animal_status', id=animal.id, status='QUARANTINE') }}" class="details-button">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Quarentena
+                </a>
+
+                <a href="{{ url_for('change_animal_status', id=animal.id, status='UNADOPTABLE') }}" class="details-button danger">
+                    <i class="fa-solid fa-xmark"></i></i> Indisponível
+                </a>
+
+            {% elif animal.status.name == "QUARANTINE" %}
+            <h2 class="section-title actions">
+                <i class="fa-solid fa-triangle-exclamation"></i> Animal em Quarentena
+            </h2>
+            <p>Informe o novo status do animal:</p>
+
+                <a href="{{ url_for('change_animal_status', id=animal.id, status='AVAILABLE') }}" class="details-button">
+                    <i class="fa-solid fa-shield-heart"></i> Disponível
+                </a>
+
+                <a href="{{ url_for('change_animal_status', id=animal.id, status='UNADOPTABLE') }}" class="details-button danger">
+                    <i class="fa-solid fa-xmark"></i></i> Indisponível
+                </a>
+            
+            {% endif %}
+        </div>
+
+        <h2 class="section-title actions"><i class="fa-solid fa-gears"></i> Ações</h2>
+
         <div class="details-buttons-top">
+
             <a href="" class="details-button">
                 <i class="fa-solid fa-pen"></i> Editar Informações
             </a>
@@ -41,9 +81,15 @@
                 <a href="{{ url_for('adoption_reservation', animal_id=animal.id) }}" class="details-button">
                     <i class="fa-solid fa-heart-circle-plus"></i> Reservar Adoção
                 </a>
+
             {% elif animal.status.name == "ADOPTED" %}
-                <a href="" class="details-button danger">
+                <a href="{{ url_for('adoption_return_registration', animal_id=animal.id) }}" class="details-button danger">
                     <i class="fa-solid fa-arrows-turn-to-dots"></i> Registrar Devolução
+                </a>
+                
+            
+                <a href="" class="details-button">
+                     Remover da Quarentena
                 </a>
             {% endif %}
         </div>

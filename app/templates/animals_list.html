@@ -30,9 +30,10 @@
                         <strong>Idade:</strong> {{ animal.age_months }} meses<br>
                         <strong>Porte:</strong> {{ animal.size_format() }}<br>
                         <strong>Status:</strong> {{ animal.status_format() }}<br>
-                        <strong>Temperamento:</strong> {{ animal.temperament }}<br>
+                        {{ animal.extra_info() | safe }}<br>
 
-                        {{ animal.extra_info() }}
+                        <br><strong>Temperamento:</strong><br>
+                        <i>{{ animal.temperament_format() }}</i>
                     </p>
 
                     <a href="{{ url_for('animal_details', id=animal.id) }}" class="list-button">

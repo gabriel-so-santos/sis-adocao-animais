@@ -29,7 +29,7 @@ class Cat(VaccinableMixin, Animal):
 
     @override
     def extra_info(self):
-        return f"<strong>É Hipoalergênico?</strong>: {'Sim' if self.is_hypoallergenic else 'Não'}"
+        return f"<strong>É Hipoalergênico?:</strong> {'Sim' if self.is_hypoallergenic else 'Não'}"
     
     def is_hypoallergenic_format(self):
         return 'Sim' if self.is_hypoallergenic else 'Não'

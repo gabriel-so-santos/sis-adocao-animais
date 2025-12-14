@@ -11,28 +11,27 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
     html_icon = "fa-solid fa-dog"
 
     def __init__(self,
+        id: int,
         species: Species,
         breed: str,
         name: str,
         gender: Gender,
         age_months: int,
         size: Size,
-        temperament: list[str] | None,
+        temperament: list[str],
         status: AnimalStatus,
+
         needs_walk: bool,
 
-        id: int = None,
-        timestamp: datetime | str = None,
         ):
-
         super().__init__(
-            id, species, breed, name, gender, age_months, size, temperament, status, timestamp
+            id, species, breed, name, gender, age_months, size, temperament, status
         )
         self.needs_walk = needs_walk
 
     @override
     def extra_info(self):
-        return f"Precisa de passeio?: {'Sim' if self.needs_walk else 'Não'}"
+        return f"<strong>Precisa de passeio?:</strong> {'Sim' if self.needs_walk else 'Não'}"
     
     def needs_walk_format(self):
         return 'Sim' if self.needs_walk else 'Não'

@@ -15,6 +15,9 @@ from infrastructure.repositories.adoption_repo import AdoptionRepository
 from domain.adoptions.reservation_queue import ReservationQueue
 from infrastructure.repositories.reservation_queue_repo import ReservationQueueRepository
 
+from domain.adoptions.adoption_return import AdoptionReturn
+from infrastructure.repositories.adoption_return_repo import AdoptionReturnRepository
+
 from domain.events.events import EventType, VaccineEvent, TrainingEvent
 from infrastructure.repositories.event_repo import EventRepository
 
@@ -82,13 +85,19 @@ def save_animal():
             err_msg="Este animal já tem registro cadastrado."
         )
         
-    return redirect(url_for("homepage"))
-
+    return redirect(url_for("animals_list"))
 
 @app.route("/animals/<id>/details", methods=["GET", "POST"])
 def animal_details(id):
     animal = animal_repo.get_by(id=id)
     return render_template("animal_details.html", animal=animal)
+
+@app.route("/animals/<id>/details/change-status/<status>", methods=["GET", "POST"])
+def change_animal_status(id, status):
+    new_status = AnimalStatus[status.upper()]
+
+    animal_repo.update_status(id, new_status)
+    return redirect(url_for("animal_details", id=id))
 
 # -------------------------- ADOPTERS --------------------------
 
@@ -143,7 +152,7 @@ def save_adopter():
             err_msg="Este adotante já tem registro cadastrado."
         )
 
-    return redirect(url_for("homepage"))
+    return redirect(url_for("adopters_list"))
 
 # -------------------------- EVENTS --------------------------
 
@@ -152,6 +161,8 @@ event_repo = EventRepository(session)
 reservation_q_repo = ReservationQueueRepository(session)
 
 adoption_repo = AdoptionRepository(session)
+
+adoption_return_repo = AdoptionReturnRepository(session)
 
 # RESERVATION
 @app.route("/adoptions/reservations")
@@ -186,7 +197,7 @@ def adoption_reservation():
     if animal_id:
         selected_animal = animal_repo.get_by(animal_id)
     else:
-        animals = animal_repo.list_all()
+        animals = animal_repo.list_reservable_animals()
         
     # ADOPTER
     if adopter_id:
@@ -207,18 +218,25 @@ def save_adoption_reservation():
     animal_id = int(request.form["animal_id"])
     adopter_id = int(request.form["adopter_id"])
 
-    animal_repo.update_status(
-        id=animal_id,
-        new_status=AnimalStatus.RESERVED
-    )
-
     reservation = ReservationQueue(
         animal_id=animal_id,
         adopter_id=adopter_id,
         compatibility_rate=50,
     )
-    reservation_q_repo.save(reservation)
 
+    was_saved = reservation_q_repo.save(reservation)
+
+    if not was_saved:
+        return render_template(
+            "error.html",
+            err_msg="Esta reserva já foi cadastrada."
+        )
+
+    animal_repo.update_status(
+        id=animal_id,
+        new_status=AnimalStatus.RESERVED
+    )
+    
     return redirect(url_for("adoption_reservation_list"))
 
 # ADOPTION
@@ -252,6 +270,30 @@ def cancel_reservation():
     reservation_q_repo.delete_by(id=reservation_id)
 
     return redirect(url_for("adoption_reservation_list"))
+
+@app.route("/adoptions/returns/new")
+def adoption_return_registration():
+    animal_id = int(request.args.get("animal_id"))
+    animal = animal_repo.get_by(id=animal_id)
+
+    return render_template("return_registration.html", animal=animal)
+
+@app.route("/adoptions/returns/save", methods=["GET", "POST"])
+def save_adoption_return():
+    print(request.form)
+    animal_id = int(request.form["animal_id"])
+
+    adoption = adoption_repo.get_by_animal_id(animal_id)
+
+    adoption_return = AdoptionReturn(
+        adoption_id=adoption.id,
+        reason=request.form["reason"]
+    )
+    adoption_return_repo.save(adoption_return)
+
+    animal_repo.update_status(id=animal_id, new_status=AnimalStatus.RETURNED)
+
+    return redirect(url_for("animal_details", id=animal_id))
 
 # VACCINE
 @app.route("/animals/<animal_id>/vaccine/new")
