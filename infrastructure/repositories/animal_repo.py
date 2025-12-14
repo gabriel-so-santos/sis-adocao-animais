@@ -105,8 +105,9 @@ class AnimalRepository(BaseRepository):
             AnimalStatus.AVAILABLE.value,
             AnimalStatus.RESERVED.value,
         ]
+        models = self.session.query(AnimalModel).filter(AnimalModel.status.in_(reservable)).all()
 
-        return self.session.query(AnimalModel).filter(AnimalModel.status.in_(reservable)).all()
+        return [self._to_domain(model) for model in models]
     
     @override  
     def update(self, animal: Cat | Dog) -> bool:

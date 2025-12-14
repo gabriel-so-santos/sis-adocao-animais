@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Adoções Registradas</title>
+{% endblock %}
+
+{% block body %}
+<div class="list-container">
+
+    <h1 class="list-title">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        Adoções Registradas
+    </h1>
+
+    {% if adoptions|length == 0 %}
+        <p class="empty-message">
+            Nenhuma adoção registrada até o momento.
+        </p>
+    {% else %}
+        <div class="list-grid">
+
+            {% for adoption in adoptions %}
+                <div class="list-card">
+                    <h3 class="animal-name">
+                        <i class="{{ adoption.animal.html_icon }}"></i>
+                        {{ adoption.animal }}
+                    </h3>
+
+                    <p class="animal-info">
+                        <strong>Adotante:</strong> {{ adoption.adopter }}<br>
+                        <strong>Taxa:</strong> R$ {{ "%.2f"|format(adoption.fee) }}<br>
+                        <strong>Data:</strong> {{ adoption.timestamp.strftime("%d/%m/%Y %H:%M") }}
+                    </p>
+
+                    <a href="{{ url_for('animal_details', id=adoption.animal.id) }}"
+                    class="list-button">
+                        <i class="fa-solid fa-eye"></i> Ver Animal
+                    </a>
+
+                    <a href="{{ url_for('adoption_return_registration', animal_id=adoption.animal.id) }}" class="details-button danger">
+                        <i class="fa-solid fa-arrows-turn-to-dots"></i> Registrar Devolução
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if adoption_returns|length != 0 %}
+
+        <h2 class="list-title bottom">
+            <i class="fa-solid fa-arrows-rotate"></i> Devolucões Registradas
+        </h2>
+
+        <div class="list-grid">
+            {% for adoption_return in adoption_returns %}
+                <div class="list-card">
+
+                    <h3 class="animal-name">
+                        <i class="fa-solid fa-arrows-turn-to-dots"></i> Devolução
+                    </h3>
+
+                    <h3 class="animal-name">
+                        <i class="{{ adoption_return.animal.html_icon }}"></i>
+                        {{ adoption_return.animal }}
+                    </h3>
+
+                    <p class="animal-info">
+                        <strong>Adotante:</strong> {{ adoption_return.adopter }}<br>
+                        <strong>Taxa:</strong> R$ {{ "%.2f"|format(adoption_return.fee) }}<br>
+                        <strong>Data da Adoção:</strong>
+                        {{ adoption_return.adoption_timestamp.strftime("%d/%m/%Y %H:%M") }}<br>
+                        <strong>Data da Devolução:</strong>
+                        {{ adoption_return.return_timestamp.strftime("%d/%m/%Y %H:%M") }}
+                    </p>
+
+                    <a href="{{ url_for('animal_details', id=adoption_return.animal.id) }}"
+                    class="list-button">
+                        <i class="fa-solid fa-eye"></i> Ver Animal
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

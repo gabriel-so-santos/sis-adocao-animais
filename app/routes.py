@@ -165,7 +165,7 @@ adoption_repo = AdoptionRepository(session)
 adoption_return_repo = AdoptionReturnRepository(session)
 
 # RESERVATION
-@app.route("/adoptions/reservations")
+@app.route("/reservations")
 def adoption_reservation_list():
     reservations = reservation_q_repo.list_all()
 
@@ -183,7 +183,7 @@ def adoption_reservation_list():
 
     return render_template("adoption_reservation_list.html", reservations=reservation_data)
 
-@app.route("/adoptions/reservations/new")
+@app.route("/reservations/new")
 def adoption_reservation():
     animal_id = request.args.get("animal_id")
     adopter_id = request.args.get("adopter_id")
@@ -213,7 +213,7 @@ def adoption_reservation():
         selected_adopter=selected_adopter,
     )
 
-@app.route("/adoptions/reservations/save", methods=["GET", "POST"])
+@app.route("/reservations/save", methods=["GET", "POST"])
 def save_adoption_reservation():
     animal_id = int(request.form["animal_id"])
     adopter_id = int(request.form["adopter_id"])
@@ -239,8 +239,7 @@ def save_adoption_reservation():
     
     return redirect(url_for("adoption_reservation_list"))
 
-# ADOPTION
-@app.route("/adoptions/reservations/confirm")
+@app.route("/reservations/confirm")
 def confirm_adoption():
     reservation_id = request.args.get("id")
 
@@ -264,12 +263,47 @@ def confirm_adoption():
 
     return redirect(url_for("adoption_reservation_list"))
 
-@app.route("/adoptions/reservations/cancel")
+@app.route("/reservations/cancel")
 def cancel_reservation():
     reservation_id = request.args.get("id")
     reservation_q_repo.delete_by(id=reservation_id)
 
     return redirect(url_for("adoption_reservation_list"))
+
+#ADOPTION
+@app.route("/adoptions")
+def adoptions_list():
+    adoptions = adoption_repo.list_all()
+
+    adoption_data = list()
+    return_data = list()
+
+    for a in adoptions:
+        animal = animal_repo.get_by(id=a.animal_id)
+        adopter = adopter_repo.get_by(id=a.adopter_id)
+
+        is_active = not adoption_return_repo.has_returned_adoption(a.id)
+
+
+        if is_active:
+            adoption_data.append({
+                    "id": a.id,
+                    "timestamp": a.timestamp,
+                    "fee": a.fee,
+                    "animal": animal,
+                    "adopter": adopter,
+            })
+        else:
+            return_data.append({
+                    "id": a.id,
+                    "adoption_timestamp": a.timestamp,
+                    "return_timestamp": adoption_return_repo.get_timestamp(adoption_id=a.id),
+                    "fee": a.fee,
+                    "animal": animal,
+                    "adopter": adopter,
+            })
+        
+    return render_template("adoptions_list.html", adoptions=adoption_data, adoption_returns=return_data)
 
 @app.route("/adoptions/returns/new")
 def adoption_return_registration():

@@ -52,7 +52,7 @@ h1 {
 .card-grid {
     display: grid;
     gap: 25px;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     justify-items: center;
 }
 
@@ -285,6 +285,9 @@ select:invalid {
     font-size: 2rem;
     margin-bottom: 30px;
     text-align: center;
+}
+.list-title.bottom {
+    margin-top: 30px;
 }
 
 .empty-message {
