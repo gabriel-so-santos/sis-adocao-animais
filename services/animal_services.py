@@ -6,12 +6,9 @@ from domain.enums.animal_status import AnimalStatus
 
 from domain.events.animal_events import QuarentineEvent
 
-from infrastructure.repositories.animal_repo import AnimalRepository
-from infrastructure.repositories.event_repo import EventRepository
-
 class AnimalService:
 
-    def __init__(self, animal_repo: AnimalRepository, event_repo: EventRepository):
+    def __init__(self, animal_repo, event_repo):
         self.animal_repo = animal_repo
         self.event_repo = event_repo
 

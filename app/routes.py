@@ -1,12 +1,11 @@
 from flask import render_template, redirect, url_for, request
 from main import app, session
-import json
 from datetime import datetime
 
 from domain.animals.animal import Species, Gender, Size, AnimalStatus
 from infrastructure.repositories.animal_repo import AnimalRepository
 
-from domain.people.adopter import Adopter, HousingType
+from domain.people.adopter import Adopter, HousingType, minimum_age
 from infrastructure.repositories.adopter_repo import AdopterRepository
 
 from domain.adoptions.adoption import Adoption
@@ -23,9 +22,7 @@ from infrastructure.repositories.event_repo import EventRepository
 
 from services.timeline_service import TimelineService
 from services.animal_services import AnimalService
-
-with open("settings.json", "r", encoding="utf-8") as f:
-    settings = json.load(f)
+from services.adopter_service import AdopterService
 
 @app.route("/")
 def homepage():
@@ -62,12 +59,12 @@ def save_animal():
 
     return redirect(url_for("animals_list"))
 
-@app.route("/animals/<id:int>/details")
+@app.route("/animals/<int:id>/details")
 def animal_details(id):
     animal = animal_service.get_animal(id)
     return render_template("animal_details.html", animal=animal)
 
-@app.route("/animals/<id:int>/details/change-status/<status:str>")
+@app.route("/animals/<int:id>/details/change-status/<string:status>")
 def change_animal_status(id, status):
     animal_service.change_status(id, status)
     return redirect(url_for("animal_details", id=id))
@@ -93,57 +90,34 @@ def animal_timeline(animal_id):
 # -------------------------- ADOPTERS --------------------------
 
 adopter_repo = AdopterRepository(session)
-min_adopter_age = settings["policies"]["minimum_adopter_age"]
 
-@app.route("/adopters", methods=["GET", "POST"])
+adopter_service = AdopterService(
+    adopter_repo=adopter_repo,
+)
+
+@app.route("/adopters", methods=["GET"])
 def adopters_list():
-    adopters = adopter_repo.list_all()
+    adopters = adopter_service.list_adopters()
     return render_template("adopters_list.html", adopters=adopters)
 
 @app.route("/adopters/new")
 def adopter_registration():
-    return render_template("adopter_registration.html", minimum_age=min_adopter_age)
-
-@app.route("/adopters/save", methods=["GET", "POST"])
-def save_adopter():
-
-    age = int(request.form["age"])
-
-    if age < min_adopter_age:
-        return render_template(
-            "error.html",
-            err_msg=f"""
-                Você não cumpre as políticas para cadastro de adotantes.
-                A idade mínima para adotantes é {min_adopter_age}."""
-            )
-
-    if age > 128:
-        return render_template(
-            "error.html",
-            err_msg="Idade fora do limite permitido."
-            )
-    
-    adopter = Adopter(
-        id=None,
-        timestamp=None,
-        name = request.form["name"].strip().capitalize(),
-        age = age,
-        housing_type = HousingType[request.form["housing_type"].upper()],
-        usable_area = float(request.form["usable_area"]),
-        has_pet_experience = request.form["has_pet_experience"] == "true",
-        has_children_at_home = request.form["has_children_at_home"] == "true",
-        has_other_animals = request.form["has_other_animals"] == "true"
+    return render_template(
+        "adopter_registration.html",
+        minimum_age=minimum_age
     )
 
-    was_saved = adopter_repo.save(adopter)
+@app.route("/adopters/save", methods=["POST"])
+def save_adopter():
+    try:
+        adopter_service.register_adopter(request.form)
+        return redirect(url_for("adopters_list"))
 
-    if not was_saved:
+    except ValueError as e:
         return render_template(
             "error.html",
-            err_msg="Este adotante já tem registro cadastrado."
+            err_msg=str(e)
         )
-
-    return redirect(url_for("adopters_list"))
 
 # -------------------------- EVENTS --------------------------
 
