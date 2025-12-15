@@ -1,4 +1,4 @@
-from domain.events.events import TrainingEvent
+from domain.events.animal_events import TrainingEvent
 
 class TrainableMixin:
 

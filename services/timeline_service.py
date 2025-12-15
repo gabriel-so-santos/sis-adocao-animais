@@ -3,7 +3,7 @@ from infrastructure.repositories.adoption_return_repo import AdoptionReturnRepos
 from infrastructure.repositories.event_repo import EventRepository
 from infrastructure.repositories.adopter_repo import AdopterRepository
 
-from domain.events.events import (
+from domain.events.animal_events import (
     Event,
     AdoptionEvent,
     ReturnEvent,

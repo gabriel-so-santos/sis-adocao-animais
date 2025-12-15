@@ -1,21 +1,8 @@
 from abc import ABC, abstractmethod
-from enum import Enum
-from datetime import datetime, timezone
-from domain.animals.animal_status import AnimalStatus
+from datetime import datetime
+from domain.enums.animal_status import AnimalStatus
+from domain.enums.animal_enums import *
 from domain.exceptions import InvalidStatusTransitionError
-
-class Species(Enum):
-    CAT = "CAT"
-    DOG = "DOG"
-
-class Gender(Enum):
-    MALE = "MALE"
-    FEMALE = "FEMALE"
-
-class Size(Enum):
-    SMALL = "SMALL"
-    MEDIUM = "MEDIUM"
-    LARGE = "LARGE"
 
 class Animal(ABC):
     """

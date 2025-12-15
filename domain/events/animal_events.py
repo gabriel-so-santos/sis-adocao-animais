@@ -1,14 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from domain.enums.event_type import EventType
 from domain.people.adopter import Adopter
-
-class EventType(Enum):
-    ADOPTION = "ADOPTION"
-    RETURN = "RETURN"
-    TRAINING = "TRAINING"
-    VACCINE = "VACCINE"
-    QUARENTINE = "QUARENTINE" 
 
 @dataclass
 class Event:

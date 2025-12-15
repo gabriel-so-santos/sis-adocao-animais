@@ -1,5 +1,5 @@
 from datetime import datetime
-from domain.events.events import *
+from domain.events.animal_events import *
 
 class EventConverter:
 

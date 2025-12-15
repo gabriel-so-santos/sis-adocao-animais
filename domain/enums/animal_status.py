@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 class AnimalStatus(Enum):
     """Enumeração que representa os estados possíveis de um animal no sistema.

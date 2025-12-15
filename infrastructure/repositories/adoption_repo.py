@@ -1,8 +1,6 @@
 from .base_repo import BaseRepository
 from infrastructure.db_models.adoption_model import AdoptionModel
 from domain.adoptions.adoption import Adoption
-from domain.events.events import AdoptionEvent
-from typing import override
 
 class AdoptionRepository(BaseRepository):
 

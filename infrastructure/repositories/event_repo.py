@@ -5,7 +5,7 @@ from .base_repo import BaseRepository
 from typing import override
 
 from infrastructure.db_models.event_model import EventModel
-from domain.events.events import Event, EventType
+from domain.events.animal_events import Event, EventType
 
 class EventRepository(BaseRepository):
     

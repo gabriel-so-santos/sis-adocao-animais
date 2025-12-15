@@ -18,7 +18,7 @@ from infrastructure.repositories.reservation_queue_repo import ReservationQueueR
 from domain.adoptions.adoption_return import AdoptionReturn
 from infrastructure.repositories.adoption_return_repo import AdoptionReturnRepository
 
-from domain.events.events import EventType, VaccineEvent, TrainingEvent, QuarentineEvent
+from domain.events.animal_events import VaccineEvent, TrainingEvent, QuarentineEvent
 from infrastructure.repositories.event_repo import EventRepository
 
 from services.timeline_service import TimelineService

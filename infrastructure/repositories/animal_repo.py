@@ -4,7 +4,7 @@ from .base_repo import BaseRepository
 from typing import override
 
 from domain.animals.animal import Species, Gender, Size
-from domain.animals.animal_status import AnimalStatus
+from domain.enums.animal_status import AnimalStatus
 
 from infrastructure.db_models.animal_model import AnimalModel
 from domain.animals.cat import Cat

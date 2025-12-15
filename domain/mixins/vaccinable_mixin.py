@@ -1,4 +1,4 @@
-from domain.events.events import VaccineEvent
+from domain.events.animal_events import VaccineEvent
 
 class VaccinableMixin:
 

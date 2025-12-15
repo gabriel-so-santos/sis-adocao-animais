@@ -1,6 +1,5 @@
 from datetime import datetime
 from domain.animals.animal import Animal, Species, Gender, Size, AnimalStatus
-
 from domain.mixins.vaccinable_mixin import  VaccinableMixin
 from domain.mixins.trainable_mixin import TrainableMixin
 

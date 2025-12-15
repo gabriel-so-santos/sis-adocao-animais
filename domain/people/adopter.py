@@ -1,8 +1,6 @@
-from enum import Enum
 from datetime import datetime
-
 from domain.people.person import Person
-
+from domain.enums.adopter_enums import HousingType
 from domain.exceptions import PolicyNotMetError
 import json
 
@@ -10,10 +8,6 @@ with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
 
 minimum_age =  settings["policies"]["minimum_adopter_age"]
-
-class HousingType(Enum):
-    HOUSE = "HOUSE"
-    APARTMENT = "APARTMENT"
 
 class Adopter(Person):
     """Representa um adotante de animais no sistema.
