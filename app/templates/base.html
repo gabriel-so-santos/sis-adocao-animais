@@ -11,8 +11,13 @@
 </head>
 
 <body>
-{% block body %}
-{% endblock %}
+{% include "topbar.html" %}
+
+    <main>
+        {% block body %}
+
+        {% endblock %}
+    </main>
 </body>
 
 </html>
