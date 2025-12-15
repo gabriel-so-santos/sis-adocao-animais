@@ -23,6 +23,7 @@ from infrastructure.repositories.event_repo import EventRepository
 from services.timeline_service import TimelineService
 from services.animal_services import AnimalService
 from services.adopter_service import AdopterService
+from services.reservation_service import ReservationService
 
 @app.route("/")
 def homepage():
@@ -128,110 +129,61 @@ adoption_repo = AdoptionRepository(session)
 
 adoption_return_repo = AdoptionReturnRepository(session)
 
+reservation_service = ReservationService(
+    reservation_repo=reservation_q_repo,
+    animal_repo=animal_repo,
+    adopter_repo=adopter_repo,
+    adoption_repo=adoption_repo
+)
+
 # RESERVATION
 @app.route("/reservations")
 def adoption_reservation_list():
-    reservations = reservation_q_repo.list_all()
-
-    reservation_data = list()
-    for r in reservations:
-        animal = animal_repo.get_by_id(id=r.animal_id)
-        adopter = adopter_repo.get_by_id(id=r.adopter_id)
-
-        reservation_data.append({
-                "id": r.id,
-                "date": r.timestamp,
-                "animal": animal,
-                "adopter": adopter
-            })
-
-    return render_template("adoption_reservation_list.html", reservations=reservation_data)
+    reservations = reservation_service.list_reservations()
+    return render_template(
+        "adoption_reservation_list.html",
+        reservations=reservations
+    )
 
 @app.route("/reservations/new")
 def adoption_reservation():
-    animal_id = request.args.get("animal_id")
-    adopter_id = request.args.get("adopter_id")
+    id_args = reservation_service.prepare_reservation_form(
+        animal_id=request.args.get("animal_id"),
+        adopter_id=request.args.get("adopter_id")
+    )
 
-    animals = None
-    adopters = None
-    selected_animal = None
-    selected_adopter = None
-
-    # ANIMAL
-    if animal_id:
-        selected_animal = animal_repo.get_by_id(animal_id)
-    else:
-        animals = animal_repo.list_reservable_animals()
-        
-    # ADOPTER
-    if adopter_id:
-        selected_adopter = adopter_repo.get_by_id(adopter_id)
-    else:
-        adopters = adopter_repo.list_all()
-    
     return render_template(
         "adoption_reservation.html",
-        animals=animals,
-        adopters=adopters,
-        selected_animal=selected_animal,
-        selected_adopter=selected_adopter,
+        **id_args
     )
 
-@app.route("/reservations/save", methods=["GET", "POST"])
+@app.route("/reservations/save", methods=["POST"])
 def save_adoption_reservation():
-    animal_id = int(request.form["animal_id"])
-    adopter_id = int(request.form["adopter_id"])
+    try:
+        reservation_service.create_reservation(
+            animal_id=int(request.form["animal_id"]),
+            adopter_id=int(request.form["adopter_id"])
+        )
+        return redirect(url_for("adoption_reservation_list"))
 
-    reservation = ReservationQueue(
-        animal_id=animal_id,
-        adopter_id=adopter_id,
-        compatibility_rate=50,
-    )
-
-    was_saved = reservation_q_repo.save(reservation)
-
-    if not was_saved:
+    except ValueError as e:
         return render_template(
             "error.html",
-            err_msg="Esta reserva já foi cadastrada."
+            err_msg=str(e)
         )
-
-    animal_repo.update_status(
-        id=animal_id,
-        new_status=AnimalStatus.RESERVED
-    )
-    
-    return redirect(url_for("adoption_reservation_list"))
 
 @app.route("/reservations/confirm")
 def confirm_adoption():
-    reservation_id = request.args.get("id")
-
-    reservation = reservation_q_repo.get_by_id(id=reservation_id)
-    animal_id = reservation.animal_id
-    adopter_id = reservation.adopter_id
-
-    reservation_q_repo.clear_queue(animal_id=animal_id)
-
-    animal_repo.update_status(
-        id=animal_id,
-        new_status=AnimalStatus.ADOPTED
+    reservation_service.confirm_reservation(
+        reservation_id=int(request.args.get("id"))
     )
-
-    adoption = Adoption(
-        animal_id=animal_id,
-        adopter_id=adopter_id,
-        fee=0,
-    )
-    adoption_repo.save(adoption)
-
     return redirect(url_for("adoption_reservation_list"))
 
 @app.route("/reservations/cancel")
 def cancel_reservation():
-    reservation_id = request.args.get("id")
-    reservation_q_repo.delete_by(id=reservation_id)
-
+    reservation_service.cancel_reservation(
+        reservation_id=int(request.args.get("id"))
+    )
     return redirect(url_for("adoption_reservation_list"))
 
 #ADOPTION
