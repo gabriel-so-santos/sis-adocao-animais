@@ -1,6 +1,6 @@
 from domain.adoptions.reservation_queue import ReservationQueue
 from domain.adoptions.adoption import Adoption
-from domain.enums import AnimalStatus
+from domain.enums.animal_status import AnimalStatus
 
 class ReservationService:
 

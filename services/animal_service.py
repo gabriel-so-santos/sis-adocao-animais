@@ -1,10 +1,11 @@
+from datetime import datetime
 from domain.animals.cat import Cat
 from domain.animals.dog import Dog
 
 from domain.enums.animal_enums import Species, Gender, Size
 from domain.enums.animal_status import AnimalStatus
 
-from domain.events.animal_events import QuarentineEvent
+from domain.events.animal_events import QuarentineEvent, VaccineEvent, TrainingEvent
 
 class AnimalService:
 
@@ -65,3 +66,42 @@ class AnimalService:
                 timestamp=None
             )
             self.event_repo.save(event)
+
+    def __parse_date(self, date_str: str):
+        return datetime.strptime(date_str, "%Y-%m-%d")
+
+    # ---------------- VACCINE ----------------
+
+    def prepare_vaccine_form(self, animal_id):
+        return self.get_animal(animal_id)
+
+    def register_vaccine(self, animal_id, form_data):
+        date = self.__parse_date(form_data["vaccine_date"])
+
+        vaccine = VaccineEvent(
+            id=None,
+            animal_id=animal_id,
+            timestamp=date,
+            vaccine_name=form_data["vaccine_name"].strip(),
+            veterinarian=form_data.get("veterinarian", "").strip().capitalize()
+        )
+        self.event_repo.save(vaccine)
+
+    # ---------------- TRAINING ----------------
+
+    def prepare_training_form(self, animal_id):
+        return self.get_animal(animal_id)
+
+    def register_training(self, animal_id, form_data):
+        date = self.__parse_date(form_data["vaccine_date"])
+
+        training = TrainingEvent(
+            id=None,
+            animal_id=animal_id,
+            timestamp=date,
+            duration_min=int(form_data.get("duration_min") or 0),
+            training_type=form_data["training_type"],
+            trainer=form_data["trainer"].strip().capitalize(),
+            notes=form_data["notes"]
+        )
+        self.event_repo.save(training)

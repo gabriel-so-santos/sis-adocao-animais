@@ -1,22 +1,13 @@
-from infrastructure.repositories.adoption_repo import AdoptionRepository
-from infrastructure.repositories.adoption_return_repo import AdoptionReturnRepository
-from infrastructure.repositories.event_repo import EventRepository
-from infrastructure.repositories.adopter_repo import AdopterRepository
-
-from domain.events.animal_events import (
-    Event,
-    AdoptionEvent,
-    ReturnEvent,
-)
+from domain.events.animal_events import Event, AdoptionEvent, ReturnEvent
 
 class TimelineService:
 
     def __init__(
         self,
-        adoption_repo: AdoptionRepository,
-        adoption_return_repo: AdoptionReturnRepository,
-        event_repo: EventRepository,
-        adopter_repo: AdopterRepository
+        adoption_repo,
+        adoption_return_repo,
+        event_repo,
+        adopter_repo
     ):
         self.adoption_repo = adoption_repo
         self.adoption_return_repo = adoption_return_repo
