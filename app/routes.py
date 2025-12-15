@@ -22,6 +22,7 @@ from domain.events.animal_events import VaccineEvent, TrainingEvent, QuarentineE
 from infrastructure.repositories.event_repo import EventRepository
 
 from services.timeline_service import TimelineService
+from services.animal_services import AnimalService
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
@@ -33,86 +34,47 @@ def homepage():
 # -------------------------- ANIMALS --------------------------
 
 animal_repo = AnimalRepository(session)
+event_repo = EventRepository(session)
 
-@app.route("/animals", methods=["GET", "POST"])
+animal_service = AnimalService(
+    animal_repo=animal_repo,
+    event_repo=event_repo
+)
+
+@app.route("/animals", methods=["GET"])
 def animals_list():
-    animals = animal_repo.list_all()
+    animals = animal_service.list_animals()
     return render_template("animals_list.html", animals=animals)
 
 @app.route("/animals/new")
 def animal_registration():
     return render_template("animal_registration.html")
 
-@app.route("/animals/save", methods=["GET", "POST"])
+@app.route("/animals/save", methods=["POST"])
 def save_animal():
-
-    species = Species[request.form["species"].upper()]
-
-    temperament = list()
-    for t in request.form["temperament"].split(","):
-        valor = t.strip().capitalize()
-        if valor:
-            temperament.append(valor)
-
-    shared_args = dict(
-        id=None,
-        species = species,
-        breed = request.form["breed"].strip().capitalize(),
-        name = request.form["name"].strip().capitalize(),
-        gender = Gender[request.form["gender"].upper()],
-        age_months = int(request.form["age_months"]),
-        size = Size[request.form["size"].upper()],
-        temperament = temperament,
-        status = AnimalStatus[request.form["status"].upper()]
-    )
-
-    if species == Species.CAT:
-        from domain.animals.cat import Cat
-        animal = Cat(
-            **shared_args,
-            is_hypoallergenic = request.form.get("is_hypoallergenic", "false") == "true"
-        )
-    else:
-        from domain.animals.dog import Dog
-        animal = Dog(
-            **shared_args,
-            needs_walk = request.form.get("needs_walk", "false") == "true"
-        )
-
-    was_saved = animal_repo.save(animal)
+    was_saved = animal_service.create_animal(form_data=request.form)
 
     if not was_saved:
         return render_template(
             "error.html",
             err_msg="Este animal já tem registro cadastrado."
         )
-        
+
     return redirect(url_for("animals_list"))
 
-@app.route("/animals/<id>/details", methods=["GET", "POST"])
+@app.route("/animals/<id:int>/details")
 def animal_details(id):
-    animal = animal_repo.get_by_id(id=id)
+    animal = animal_service.get_animal(id)
     return render_template("animal_details.html", animal=animal)
 
-@app.route("/animals/<id>/details/change-status/<status>", methods=["GET", "POST"])
+@app.route("/animals/<id:int>/details/change-status/<status:str>")
 def change_animal_status(id, status):
-    new_status = AnimalStatus[status.upper()]
-
-    animal_repo.update_status(id, new_status)
-
-    if new_status == AnimalStatus.QUARANTINE:
-        quarentine_event = QuarentineEvent(
-            id=None,
-            animal_id=id,
-            timestamp=None
-        )
-        event_repo.save(quarentine_event)
-
+    animal_service.change_status(id, status)
     return redirect(url_for("animal_details", id=id))
 
 @app.route("/animals/<animal_id>/details/timeline")
 def animal_timeline(animal_id):
-    animal = animal_repo.get_by_id(animal_id)
+    animal = animal_service.get_animal(animal_id)
 
     timeline = TimelineService(
         adoption_repo=adoption_repo,
@@ -185,7 +147,6 @@ def save_adopter():
 
 # -------------------------- EVENTS --------------------------
 
-event_repo = EventRepository(session)
 
 reservation_q_repo = ReservationQueueRepository(session)
 
