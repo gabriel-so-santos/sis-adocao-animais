@@ -1,45 +1,58 @@
 {
   "policies": {
     "minimum_adopter_age": 18,
-    "large_pet_requirement": {
-      "minimum_area_m2": 60,
-      "required_housing": "house"
-    }
+    "reservation_duration_hours": 48,
+    "minimum_area": {
+        "SMALL": 10,
+        "MEDIUM": 30,
+        "LARGE": 50
+      },
+    "wary_animal_temperaments": [
+    "Arisco",
+    "Agressivo",
+    "Reativo"
+    ]
   },
-
-  "reservations": {
-    "duration_hours": 48,
-    "confirm_adoption_time_hours": 24,
-    "one_reservation_per_pet": true
-  },
-
+  
   "compatibility": {
     "weights": {
-      "housing_vs_size": 0.35,
-      "age_vs_energy": 0.25,
-      "experience": 0.25,
-      "children_factor": 0.15
+      "size_vs_area": 0.30,
+      "size_vs_housing": 0.10,
+      "pet_age_vs_has_experience": 0.15,
+      "temperament_vs_has_children": 0.25,
+      "adopter_age": 0.10,
+      "other_animals": 0.10
+    },
+    "scores": {
+      "size_vs_area": {
+        "SMALL": { "above_min": 100, "bellow_min": 80 },
+        "MEDIUM": { "above_min": 100, "bellow_min": 50 },
+        "LARGE": { "above_min": 100, "bellow_min": 20 }
+      },
+      "size_vs_housing": {
+        "SMALL": { "APARTMENT": 100, "HOUSE": 100 },
+        "MEDIUM": { "APARTMENT": 70,  "HOUSE": 100 },
+        "LARGE": { "APARTMENT": 50,  "HOUSE": 100 }
+      },
+      "pet_age_vs_has_experience": {
+        "young_pet": { "has_experience": 100, "none": 50},
+        "adult_pet": { "has_experience": 100, "none": 80},
+        "senior_pet": { "has_experience": 100, "none": 60}
+      },
+      "temperament_vs_has_children": {
+        "regular_temperament": { "has_children": 100, "none": 100 },
+        "wary_temperament": { "has_children": 50, "none": 90 }
+      },
+      "adopter_age": {
+        "young": 0,
+        "adult": 100,
+        "senior": 80
+      },
+      "has_other_animals": {
+        "true": 80,
+        "false": 100
+      }
     }
-  },
-
-  "fees": {
-    "base_fee": 200.0, 
-    "senior": {
-      "age_limit_months": 84,
-      "discount_rate": 0.30
-    },
-    "puppy": {
-      "age_limit_months": 6,
-      "extra_vaccine_cost": 80.0
-    },
-    "special_care": {
-      "extra_treatment_cost": 120.0
-    },
-    "default_strategy": "BaseFeeStrategy"
-  },
-
-  "logging": {
-    "enable_notifications": true,
-    "log_file": "events.log"
   }
 }
+

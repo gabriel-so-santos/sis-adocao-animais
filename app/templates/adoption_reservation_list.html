@@ -21,13 +21,19 @@
 
                     <h3 class="reservation-title">
                         <i class="{{ r.animal.html_icon }}"></i>
-                        {{ r.animal.name }}
+                        {{ r.animal }}
                     </h3>
 
                     <p class="reservation-info">
-                        <strong>Adotante:</strong> {{ r.adopter.name }}<br>
-                        <strong>Espécie:</strong> {{ r.animal.species_format() }}<br>
-                        <strong>Data da reserva:</strong> {{ r.date.strftime("%d/%m/%Y") }}
+                        <strong>Adotante:</strong> {{ r.adopter }}<br>
+                        <br>
+                        <i>
+                            <strong>Data da reserva:</strong> 
+                             {{ r.timestamp.strftime("%d/%m/%Y") }}<br>
+                             
+                            <strong>Compatibilidade:</strong> 
+                             {{ "%.2f"|format(r.compatibility_rate) }}%
+                        </i>
                     </p>
 
                     <div class="reservation-actions">

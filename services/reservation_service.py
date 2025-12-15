@@ -1,6 +1,7 @@
 from domain.adoptions.reservation_queue import ReservationQueue
 from domain.adoptions.adoption import Adoption
 from domain.enums.animal_status import AnimalStatus
+from .compatibility_service import CompatibilityService
 
 class ReservationService:
 
@@ -26,9 +27,10 @@ class ReservationService:
 
             result.append({
                 "id": r.id,
-                "date": r.timestamp,
+                "timestamp": r.timestamp,
+                "compatibility_rate": r.compatibility_rate,
                 "animal": animal,
-                "adopter": adopter
+                "adopter": adopter,
             })
 
         return result
@@ -55,10 +57,21 @@ class ReservationService:
         }
 
     def create_reservation(self, animal_id: int, adopter_id: int):
+        
+        animal = self.animal_repo.get_by_id(id=animal_id)
+        adopter = self.adopter_repo.get_by_id(id=adopter_id)
+
+        compatibility_service = CompatibilityService()
+
+        compatibility_rate = compatibility_service.calculate_rate(
+            animal=animal,
+            adopter=adopter
+        )
+
         reservation = ReservationQueue(
             animal_id=animal_id,
             adopter_id=adopter_id,
-            compatibility_rate=50,
+            compatibility_rate=compatibility_rate,
         )
 
         was_saved = self.reservation_repo.save(reservation)
