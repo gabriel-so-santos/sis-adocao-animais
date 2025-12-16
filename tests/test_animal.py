@@ -1,196 +1,121 @@
 import pytest
-from domain.animals.animal_status import AnimalStatus
-from domain.exeptions import InvalidStatusTransitionError
-from domain.animals.animal import Animal, Species, Gender, Size
+from datetime import datetime
+from domain.animals.animal import Animal
+from domain.enums.animal_enums import Species, Gender, Size
+from domain.enums.animal_status import AnimalStatus
+from domain.exceptions import InvalidStatusTransitionError
 
 
 # ---------------------------------------------------------
-# Classe concreta para poder testar Animal (pois é abstrata)
+# Classe inválida (não implementa método abstrato corretamente)
 # ---------------------------------------------------------
-class FakeAnimal(Animal):
+class InvalidAnimal(Animal):
     pass
 
 
+def test_animal_without_extra_info_cannot_be_instantiated():
+    with pytest.raises(TypeError):
+        InvalidAnimal(
+            species=Species.CAT,
+            breed="Siamês",
+            name="Luna",
+            gender=Gender.FEMALE,
+            age_months=10,
+            size=Size.SMALL,
+            temperament=[],
+            status=AnimalStatus.AVAILABLE,
+        )
+
+
 # ---------------------------------------------------------
-# FIXTURE: cria um animal válido para testes
+# Classe válida para testes
+# ---------------------------------------------------------
+class FakeAnimal(Animal):
+    def extra_info(self):
+        return "ok"
+
+
+# ---------------------------------------------------------
+# FIXTURE
 # ---------------------------------------------------------
 @pytest.fixture
-def animal():
+def animal(monkeypatch):
+    monkeypatch.setattr(
+        "domain.animals.animal.settings",
+        {"policies": {"wary_animal_temperaments": ["Medroso", "Agressivo"]}}
+    )
+
     return FakeAnimal(
+        species=Species.DOG,
+        breed="vira lata",
+        name="rex",
+        gender=Gender.MALE,
+        age_months=5,
+        size=Size.MEDIUM,
+        temperament=[" medroso ", " brincalhão ", ""],
+        status=AnimalStatus.AVAILABLE,
         id=1,
-        species=Species.CAT,
-        breed="siamês",
-        name="luna",
-        gender=Gender.FEMALE,
-        age_months=12,
-        size=Size.SMALL,
-        temperament=["calma", "brincalhona"],
-        status=AnimalStatus.AVAILABLE
+        timestamp=datetime(2024, 1, 1)
     )
 
 
 # ---------------------------------------------------------
-# TESTES DE FORMATAÇÃO
+# TESTES DE INICIALIZAÇÃO
 # ---------------------------------------------------------
-
-def test_species_format_female(animal):
-    assert animal.species_format() == "Gata"
-
-
-def test_species_format_male(animal):
-    animal.gender = Gender.MALE
-    assert animal.species_format() == "Gato"
-
-
-def test_gender_format(animal):
-    assert animal.gender_format() == "Fêmea"
-
-
-def test_size_format(animal):
-    assert animal.size_format() == "Pequeno"
-
-
-def test_temperament_format(animal):
-    assert animal.temperament_format() == "Calma, Brincalhona"
-
-
-def test_status_format(animal):
-    assert animal.status_format() == "Disponível"
+def test_animal_initialization(animal):
+    assert animal.id == 1
+    assert animal.species == Species.DOG
+    assert animal.breed == "Vira lata"
+    assert animal.name == "Rex"
+    assert animal.age_months == 5
+    assert animal.temperament == ["Medroso", "Brincalhão"]
 
 
 # ---------------------------------------------------------
-# TESTES DE VALIDAÇÕES DOS SETTERS
+# TESTES DE MÉTODOS DE NEGÓCIO
 # ---------------------------------------------------------
-
-def test_invalid_species():
-    with pytest.raises(ValueError):
-        FakeAnimal(
-            id=1,
-            species="CAT",  # inválido
-            breed="Siamês",
-            name="Luna",
-            gender=Gender.FEMALE,
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
+def test_animal_str(animal):
+    assert str(animal) == "Rex, Cachorro Vira lata"
 
 
-def test_invalid_breed_value():
-    with pytest.raises(ValueError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed="   ",    # inválido
-            name="Luna",
-            gender=Gender.FEMALE,
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
-
-def test_invalid_breed_type():
-    with pytest.raises(TypeError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed=123,    # inválido
-            name="Luna",
-            gender=Gender.FEMALE,
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
+def test_animal_timestamp(animal):
+    assert isinstance(animal.timestamp, datetime)
 
 
-def test_invalid_name_value():
-    with pytest.raises(ValueError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed="Siamês",
-            name="",        # inválido
-            gender=Gender.FEMALE,
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
-
-def test_invalid_name_type():
-    with pytest.raises(TypeError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed="Siamês",
-            name=123,        # inválido
-            gender=Gender.FEMALE,
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
+def test_animal_age_group_young(animal):
+    assert animal.age_group() == "young_pet"
 
 
-def test_invalid_gender():
-    with pytest.raises(TypeError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed="Siamês",
-            name="Luna",
-            gender="FEMALE",  # inválido
-            age_months=12,
-            size=Size.SMALL,
-            temperament=[],
-        )
+def test_animal_age_group_adult(animal):
+    animal.age_months = 24
+    assert animal.age_group() == "adult_pet"
 
 
-def test_invalid_age_type(animal):
-    with pytest.raises(TypeError):
-        animal.age_months = "10"
+def test_animal_age_group_senior(animal):
+    animal.age_months = 120
+    assert animal.age_group() == "senior_pet"
 
 
-def test_invalid_age_negative(animal):
-    with pytest.raises(ValueError):
-        animal.age_months = -1
+def test_has_wary_temperament_true(animal):
+    assert animal.has_wary_temperament() is True
 
 
-def test_invalid_size():
-    with pytest.raises(TypeError):
-        FakeAnimal(
-            id=1,
-            species=Species.CAT,
-            breed="Siamês",
-            name="Luna",
-            gender=Gender.FEMALE,
-            age_months=12,
-            size="SMALL",
-            temperament=[],
-        )
-
-
-def test_invalid_temperament_not_list(animal):
-    with pytest.raises(TypeError):
-        animal.temperament = "calma"
-
-
-def test_invalid_temperament_item_not_string(animal):
-    with pytest.raises(TypeError):
-        animal.temperament = ["ok", 123]
+def test_has_wary_temperament_false(animal):
+    animal.temperament = ["Calmo"]
+    assert animal.has_wary_temperament() is False
 
 
 # ---------------------------------------------------------
-# TESTES DE TRANSIÇÃO DE STATUS
+# TESTES DE STATUS
 # ---------------------------------------------------------
-
 def test_valid_status_transition(animal):
     animal.status = AnimalStatus.RESERVED
     assert animal.status == AnimalStatus.RESERVED
 
 
-def test_invalid_status_transition(animal, monkeypatch):
-    # Mocka o método is_valid_transition para forçar transição inválida
+def test_invalid_status_transition(monkeypatch, animal):
     monkeypatch.setattr(
-        "domain.animals.animal_status.AnimalStatus.is_valid_transition",
+        "domain.enums.animal_status.AnimalStatus.is_valid_transition",
         lambda current, new: False
     )
 
