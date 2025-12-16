@@ -1,13 +1,14 @@
 # Sistema de Adoção de Animais
 
-## Informações Acadêmicas
-
 **Instituição:** Universidade Federal do Cariri (UFCA)  
 **Curso:** Engenharia de Software  
 **Disciplina:** Programação Orientada a Objetos  
 **Professor Orientador:** Jayr Alencar Pereira  
 **Aluno:** Gabriel Souza Santos  
 **Semestre:** 2025.2  
+
+### Especificação do Projeto:
+https://docs.google.com/document/d/1h4nOislnflnK_C9axnmleEKHO5fwWUoC/edit
 
 ---
 
