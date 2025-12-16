@@ -34,7 +34,7 @@ class Adopter(Person):
         has_other_animals: bool,
 
         id: int = None,
-        timestamp: datetime = None
+        timestamp: datetime = datetime.now()
     ):
         super().__init__(name, age, id, timestamp)
 

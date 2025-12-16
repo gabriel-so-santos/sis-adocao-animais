@@ -65,6 +65,6 @@ class TimelineService:
                     timestamp=ret_timestamp
                 )
                 timeline.append(return_event)
-        timeline.sort()
+        timeline.sort()     # Using __lt__
 
         return timeline

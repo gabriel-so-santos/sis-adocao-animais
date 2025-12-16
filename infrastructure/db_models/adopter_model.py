@@ -23,7 +23,7 @@ class AdopterModel(Base):
     has_pet_experience = Column(Boolean, nullable=False)
     has_children_at_home = Column(Boolean, nullable=False)
     has_other_animals = Column(Boolean, nullable=False)
-    timestamp = Column(DateTime, nullable=False, server_default=func.now())
+    timestamp = Column(DateTime, nullable=False)
 
     # -------------------------- RELATIONSHIPS --------------------------
 

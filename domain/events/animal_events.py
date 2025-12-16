@@ -5,9 +5,9 @@ from domain.people.adopter import Adopter
 
 @dataclass
 class Event:
-    id: int
+    id: int 
     animal_id: int
-    timestamp: datetime
+    timestamp: datetime 
 
     event_type: EventType = field(init=False, default=None)
 

@@ -45,6 +45,7 @@ class AnimalStatus(Enum):
             },
             AnimalStatus.RESERVED: {
                 AnimalStatus.ADOPTED,
+                AnimalStatus.AVAILABLE,
             },
             AnimalStatus.ADOPTED: {
                 AnimalStatus.RETURNED,

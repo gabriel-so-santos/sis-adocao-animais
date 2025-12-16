@@ -16,14 +16,23 @@ class AdoptionReturn:
         self,
         adoption_id: int,
         reason: str,
-        timestamp: datetime | str = datetime.now(timezone.utc)
+        timestamp: datetime = datetime.now()
     ):
-        self.__id = id
         self.adoption_id = adoption_id
         self.reason = reason
-        self.timestamp = timestamp
+        self.__timestamp = timestamp
 
     # -------------------------- PROPERTIES --------------------------
+
+    # ---- ID ----
+    @property
+    def adoption_id(self) -> int:
+        return self.__id
+
+     # ---- Timestamp ----
+    @property
+    def timestamp(self) -> datetime:
+        return self.__timestamp
 
     # ---- Adoption ID ----
     @property
@@ -46,25 +55,3 @@ class AdoptionReturn:
         if not isinstance(v, str):
             raise TypeError("reason deve ser do tipo str.")
         self.__reason = v
-
-    # ---- Timestamp ----
-    @property
-    def timestamp(self) -> datetime:
-        return self.__timestamp
-
-    @timestamp.setter
-    def timestamp(self, v: datetime | str) -> None:
-        if isinstance(v, datetime):
-            self.__timestamp = v
-            return
-
-        if isinstance(v, str):
-            try:
-                self.__timestamp = datetime.fromisoformat(v)
-                return
-            except ValueError:
-                raise ValueError(
-                    "timestamp inválido. Use datetime ou string ISO 8601 (YYYY-MM-DDTHH:MM:SS)."
-                )
-
-        raise TypeError("timestamp deve ser datetime ou string ISO 8601.")

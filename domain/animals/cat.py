@@ -18,7 +18,7 @@ class Cat(VaccinableMixin, Animal):
         status: AnimalStatus,
         is_hypoallergenic: bool,
         id: int = None,
-        timestamp: datetime = None
+        timestamp: datetime = datetime.now()
         ):
 
         super().__init__(

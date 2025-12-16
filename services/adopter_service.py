@@ -26,8 +26,6 @@ class AdopterService:
             raise ValueError("Idade fora do limite permitido.")
 
         adopter = Adopter(
-            id=None,
-            timestamp=None,
             name=form_data["name"].strip().capitalize(),
             age=age,
             housing_type=HousingType[form_data["housing_type"].upper()],

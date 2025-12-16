@@ -20,7 +20,7 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
         status: AnimalStatus,
         needs_walk: bool,
         id: int = None,
-        timestamp: datetime = None
+        timestamp: datetime = datetime.now()
         ):
 
         super().__init__(

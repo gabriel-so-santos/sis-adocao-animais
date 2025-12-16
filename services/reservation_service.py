@@ -2,6 +2,14 @@ from domain.adoptions.reservation_queue import ReservationQueue
 from domain.adoptions.adoption import Adoption
 from domain.enums.animal_status import AnimalStatus
 from .compatibility_service import CompatibilityService
+from datetime import datetime, timedelta
+from collections import defaultdict
+import json
+
+with open("settings.json", "r", encoding="utf-8") as f:
+    settings = json.load(f)
+
+queue_duration = settings["policies"]["reservation_duration_hours"]
 
 class ReservationService:
 
@@ -18,22 +26,58 @@ class ReservationService:
         self.adoption_repo = adoption_repo
 
     def list_reservations(self):
+        """
+        Retorna as reservas agrupadas por animal e separadas
+        entre filas concluídas e em andamento.
+        """
         reservations = self.reservation_repo.list_all()
+        now = datetime.now()
 
-        result = []
+        grouped = defaultdict(list)
+
+        # Agrupa reservas ativas por animal
         for r in reservations:
-            animal = self.animal_repo.get_by_id(id=r.animal_id)
-            adopter = self.adopter_repo.get_by_id(id=r.adopter_id)
+            if not r.is_canceled:
+                grouped[r.animal_id].append(r)
 
-            result.append({
-                "id": r.id,
-                "timestamp": r.timestamp,
-                "compatibility_rate": r.compatibility_rate,
+        finished = {}
+        ongoing = {}
+
+        for animal_id, queue in grouped.items():
+            # Primeira reserva define o início da fila
+            first = min(queue, key=lambda r: r.timestamp)
+            queue_end = first.timestamp + timedelta(hours=queue_duration)
+
+            animal = self.animal_repo.get_by_id(id=animal_id)
+
+            # Enriquecendo cada reserva com o adotante
+            enriched_reservations = []
+            for r in sorted(queue):
+                adopter = self.adopter_repo.get_by_id(id=r.adopter_id)
+
+                enriched_reservations.append({
+                    "id": r.id,
+                    "timestamp": r.timestamp,
+                    "compatibility_rate": r.compatibility_rate,
+                    "adopter": adopter
+                })
+
+            queue_data = {
                 "animal": animal,
-                "adopter": adopter,
-            })
+                "queue_ending": queue_end,
+                "reservations": enriched_reservations
+            }
 
-        return result
+            # Decide se a fila está concluída ou em andamento
+            if now >= queue_end:
+                finished[animal_id] = queue_data
+            else:
+                ongoing[animal_id] = queue_data
+
+        return {
+            "finished": finished,
+            "ongoing": ongoing
+        }
 
     def prepare_reservation_form(self, animal_id=None, adopter_id=None):
         animals = adopters = None
@@ -57,32 +101,32 @@ class ReservationService:
         }
 
     def create_reservation(self, animal_id: int, adopter_id: int):
-        
-        animal = self.animal_repo.get_by_id(id=animal_id)
-        adopter = self.adopter_repo.get_by_id(id=adopter_id)
 
-        compatibility_service = CompatibilityService()
+        animal = self.animal_repo.get_by_id(animal_id)
+        adopter = self.adopter_repo.get_by_id(adopter_id)
 
-        compatibility_rate = compatibility_service.calculate_rate(
-            animal=animal,
-            adopter=adopter
-        )
+        compatibility = CompatibilityService().calculate_rate(animal, adopter)
 
         reservation = ReservationQueue(
             animal_id=animal_id,
             adopter_id=adopter_id,
-            compatibility_rate=compatibility_rate,
+            compatibility_rate=compatibility
         )
 
         was_saved = self.reservation_repo.save(reservation)
-
         if not was_saved:
-            raise ValueError("Esta reserva já foi cadastrada.")
+            raise ValueError("Reserva já existente.")
 
-        self.animal_repo.update_status(
-            id=animal_id,
-            new_status=AnimalStatus.RESERVED
-        )
+        if not self.reservation_repo.has_active_reservations(animal_id):
+            self.animal_repo.update_status(
+                id=animal_id,
+                new_status=AnimalStatus.RESERVED
+            )
+
+    def get_queue_ending_time(self, animal_id: int) -> datetime:
+        first_reservation = self.reservation_repo.get_first_reservation(animal_id)
+        queue_ending = first_reservation.timestamp + timedelta(hours=queue_duration)
+        return queue_ending
 
     def confirm_reservation(self, reservation_id: int):
         reservation = self.reservation_repo.get_by_id(id=reservation_id)
@@ -102,8 +146,55 @@ class ReservationService:
             adopter_id=adopter_id,
             fee=0,
         )
-
         self.adoption_repo.save(adoption)
 
     def cancel_reservation(self, reservation_id: int):
-        self.reservation_repo.delete_by(id=reservation_id)
+        self.reservation_repo.cancel_reservation(reservation_id)
+
+        reservation = self.reservation_repo.get_by_id(reservation_id)
+        animal_id = reservation.animal_id
+
+        if self.reservation_repo.all_canceled(animal_id):
+            self.reservation_repo.clear_queue(animal_id)
+
+            self.animal_repo.update_status(
+                id=animal_id,
+                new_status=AnimalStatus.AVAILABLE
+            )
+    
+    def finalize_queue(self, animal_id: int):
+
+        if not self.reservation_repo.is_queue_expired(
+            animal_id,
+            queue_duration
+        ):
+            return None
+
+        queue = self.reservation_repo.list_active_queue(animal_id)
+
+        if not queue:
+            self.animal_repo.update_status(
+                id=animal_id,
+                new_status=AnimalStatus.AVAILABLE
+            )
+            return None
+
+        selected = queue[0] 
+        return selected
+    
+    def confirm_adoption(self, reservation: ReservationQueue):
+
+        self.reservation_repo.clear_queue(reservation.animal_id)
+
+        self.animal_repo.update_status(
+            id=reservation.animal_id,
+            new_status=AnimalStatus.ADOPTED
+        )
+
+        adoption = Adoption(
+            animal_id=reservation.animal_id,
+            adopter_id=reservation.adopter_id,
+            fee=0
+        )
+
+        self.adoption_repo.save(adoption)

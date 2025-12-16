@@ -125,10 +125,11 @@ def save_adopter():
 # -------------------------- RESERVATION --------------------------
 @app.route("/reservations")
 def adoption_reservation_list():
-    reservations = reservation_service.list_reservations()
+    queues = reservation_service.list_reservations()
     return render_template(
         "adoption_reservation_list.html",
-        reservations=reservations
+        finished_queues=queues["finished"],
+        ongoing_queues=queues["ongoing"]
     )
 
 @app.route("/reservations/new")
@@ -160,7 +161,7 @@ def save_adoption_reservation():
 
 @app.route("/reservations/confirm")
 def confirm_adoption():
-    reservation_service.confirm_reservation(
+    reservation_service.confirm_adoption(
         reservation_id=int(request.args.get("id"))
     )
     return redirect(url_for("adoption_reservation_list"))

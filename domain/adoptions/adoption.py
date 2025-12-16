@@ -19,13 +19,13 @@ class Adoption:
         adopter_id: int,
         fee: float,
         id: int = None,
-        timestamp: datetime | str = datetime.now(timezone.utc)
+        timestamp: datetime = datetime.now()
     ):
-        self.__id = id
         self.animal_id = animal_id
         self.adopter_id = adopter_id
         self.fee = fee
-        self.timestamp = timestamp
+        self.__id = id
+        self.__timestamp = timestamp
 
     # -------------------------- PROPERTIES --------------------------
 
@@ -33,6 +33,11 @@ class Adoption:
     @property
     def id(self) -> int:
         return self.__id
+    
+    # ---- Timestamp ----
+    @property
+    def timestamp(self) -> datetime:
+        return self.__timestamp
 
     # ---- Animal ID ----
     @property
@@ -72,25 +77,3 @@ class Adoption:
         if v < 0:
             raise ValueError("fee não pode ser negativa.")
         self.__fee = float(v)
-
-    # ---- Timestamp ----
-    @property
-    def timestamp(self) -> datetime:
-        return self.__timestamp
-
-    @timestamp.setter
-    def timestamp(self, v: datetime | str) -> None:
-        if isinstance(v, datetime):
-            self.__timestamp = v
-            return
-
-        if isinstance(v, str):
-            try:
-                self.__timestamp = datetime.fromisoformat(v)
-                return
-            except ValueError:
-                raise ValueError(
-                    "timestamp inválido. Use datetime ou string ISO 8601 (YYYY-MM-DDTHH:MM:SS)."
-                )
-
-        raise TypeError("timestamp deve ser datetime ou string ISO 8601.")

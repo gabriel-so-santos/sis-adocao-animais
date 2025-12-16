@@ -10,48 +10,100 @@
 
     <h1 class="details-title">Reservas de Adoção</h1>
 
-    {% if reservations|length == 0 %}
-        <p class="empty-message">Não há reservas de adoção no momento.</p>
-    {% else %}
+    <!-- Finished Queues -->
+    <section class="reservations-section">
 
-        <div class="cards-container">
+        <h2 class="details-subtitle"><i class="fa-regular fa-circle-check"></i> Reservas Concluídas</h2>
 
-            {% for r in reservations %}
-                <div class="reservation-card">
+        {% if finished_queues|length == 0 %}
+            <p class="empty-message">Nenhuma reserva concluída.</p>
+        {% else %}
+            {% for queue in finished_queues.values() %}
+                <div class="animal-group">
 
-                    <h3 class="reservation-title">
-                        <i class="{{ r.animal.html_icon }}"></i>
-                        {{ r.animal }}
+                    <h3 class="animal-title">
+                        <i class="{{ queue.animal.html_icon }}"></i>
+                        {{ queue.animal }}
                     </h3>
 
-                    <p class="reservation-info">
-                        <strong>Adotante:</strong> {{ r.adopter }}<br>
-                        <br>
-                        <i>
-                            <strong>Data da reserva:</strong> 
-                             {{ r.timestamp.strftime("%d/%m/%Y") }}<br>
-                             
-                            <strong>Compatibilidade:</strong> 
-                             {{ "%.2f"|format(r.compatibility_rate) }}%
-                        </i>
-                    </p>
+                    {% for r in queue.reservations %}
+                        <div class="reservation-card finished">
 
-                    <div class="reservation-actions">
-                        <a href="{{ url_for('confirm_adoption', id=r.id) }}" class="reservation-button confirm">
-                            <i class="fa-solid fa-check"></i> Confirmar Adoção
-                        </a>
+                            <p>
+                                <strong>Adotante:</strong> {{ r.adopter }}<br>
+                                <strong>Compatibilidade:</strong>
+                                {{ "%.2f"|format(r.compatibility_rate) }}%
+                            </p>
 
-                        <a href="{{ url_for('cancel_reservation', id=r.id) }}" class="reservation-button cancel">
-                            <i class="fa-solid fa-x"></i> Cancelar
-                        </a>
-                    </div>
+                            <div class="reservation-actions">
+                                <a href="{{ url_for('confirm_adoption', id=r.id) }}"
+                                   class="reservation-button confirm">
+                                    <i class="fa-solid fa-check"></i>
+                                    Confirmar Adoção
+                                </a>
+                            </div>
+
+                            <div class="reservation-actions">
+                                <a href="{{ url_for('cancel_reservation', id=r.id) }}"
+                                   class="reservation-button cancel">
+                                    <i class="fa-solid fa-x"></i>
+                                    Cancelar
+                                </a>
+                            </div>
+
+                        </div>
+                    {% endfor %}
 
                 </div>
             {% endfor %}
+        {% endif %}
+    </section>
 
-        </div>
+    <!-- Ongoing Queues -->
+    <section class="reservations-section">
 
-    {% endif %}
+        <h2 class="details-subtitle"><i class="fa-solid fa-clock-rotate-left"></i> Reservas em Andamento</h2>
+
+        {% if ongoing_queues|length == 0 %}
+            <p class="empty-message">Nenhuma reserva em andamento.</p>
+        {% else %}
+            {% for queue in ongoing_queues.values() %}
+                <div class="animal-group">
+
+                    <h3 class="animal-title">
+                        <i class="{{ queue.animal.html_icon }}"></i>
+                        {{ queue.animal }}
+                    </h3>
+
+                    <p class="queue-info">
+                        <strong>Fila encerra em:</strong>
+                        {{ queue.queue_ending.strftime("%d/%m/%Y %H:%M") }}
+                    </p>
+
+                    {% for r in queue.reservations %}
+                        <div class="reservation-card">
+
+                            <p>
+                                <strong>Adotante:</strong> {{ r.adopter }}<br>
+                                <strong>Compatibilidade:</strong>
+                                {{ "%.2f"|format(r.compatibility_rate) }}%
+                            </p>
+
+                            <div class="reservation-actions">
+                                <a href="{{ url_for('cancel_reservation', id=r.id) }}"
+                                   class="reservation-button cancel">
+                                    <i class="fa-solid fa-x"></i>
+                                    Cancelar
+                                </a>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+
+                </div>
+            {% endfor %}
+        {% endif %}
+    </section>
 
 </div>
 {% endblock %}

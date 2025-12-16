@@ -29,7 +29,6 @@ class AnimalService:
         ]
 
         shared_args = dict(
-            id=None,
             species=species,
             breed=form_data["breed"].strip().capitalize(),
             name=form_data["name"].strip().capitalize(),
@@ -37,7 +36,7 @@ class AnimalService:
             age_months=int(form_data["age_months"]),
             size=Size[form_data["size"].upper()],
             temperament=temperament,
-            status=AnimalStatus[form_data["status"].upper()]
+            status=AnimalStatus.AVAILABLE
         )
 
         if species == Species.CAT:
@@ -63,7 +62,7 @@ class AnimalService:
             event = QuarentineEvent(
                 id=None,
                 animal_id=animal_id,
-                timestamp=None
+                timestamp=datetime.now()
             )
             self.event_repo.save(event)
 

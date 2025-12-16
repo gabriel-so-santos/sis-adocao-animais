@@ -1,4 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import json
+
+with open("settings.json", "r", encoding="utf-8") as f:
+    settings = json.load(f)
+
+duration_hours = settings["policies"]["reservation_duration_hours"]
 
 class ReservationQueue:
     """
@@ -19,16 +25,47 @@ class ReservationQueue:
         animal_id: int,
         adopter_id: int,
         compatibility_rate: float,
+        is_canceled: bool = False,
         id = None,
-        timestamp: datetime | str = datetime.now(timezone.utc)
+        timestamp: datetime = datetime.now()
     ):
-        self.__id = id
         self.animal_id = animal_id
         self.adopter_id = adopter_id
         self.compatibility_rate = compatibility_rate
-        self.timestamp = timestamp 
+        self.is_canceled = is_canceled
+        self.__id = id
+        self.__timestamp = timestamp 
+
+    def __lt__(self, rq: "ReservationQueue") -> bool:
+        if self.compatibility_rate != rq.compatibility_rate:
+            return self.compatibility_rate > rq.compatibility_rate
+        
+        return self.timestamp < rq.timestamp
+    
+    def check_expiration(self) -> bool:
+        """
+        Verifica se a reserva expirou com base na duração configurada.
+
+        Args:
+            duration_hours (int): Duração máxima da reserva em horas.
+
+        Returns:
+            bool: True se a reserva expirou, False caso contrário.
+        """
+        expiration_time = self.timestamp + timedelta(hours=duration_hours)
+
+        if datetime.now(timezone.utc) >= expiration_time:
+            self.has_ended = True
+            return True
+
+        return False
 
     # -------------------------- PROPERTIES --------------------------
+
+    # ---- Timestamp ----
+    @property
+    def timestamp(self) -> datetime:
+        return self.__timestamp
 
     # ---- ID ----
     @property
@@ -74,24 +111,13 @@ class ReservationQueue:
             raise ValueError("compatibility_rate deve estar entre 0 e 100.")
         self.__compatibility_rate = float(v)
 
-    # ---- Timestamp ----
+    # ---- Is Canceled ----
     @property
-    def timestamp(self) -> datetime:
-        return self.__timestamp
-
-    @timestamp.setter
-    def timestamp(self, v: datetime | str) -> None:
-        if isinstance(v, datetime):
-            self.__timestamp = v
-            return
-
-        if isinstance(v, str):
-            try:
-                self.__timestamp = datetime.fromisoformat(v)
-                return
-            except ValueError:
-                raise ValueError(
-                    "timestamp inválido. Use datetime ou string ISO 8601 (YYYY-MM-DDTHH:MM:SS)."
-                )
-
-        raise TypeError("timestamp deve ser datetime ou string ISO 8601.")
+    def is_canceled(self) -> bool: 
+        return self.__is_canceled
+    
+    @is_canceled.setter
+    def is_canceled(self, v: bool) -> None:
+        if not isinstance(v, bool):
+            raise TypeError("is_canceled deve ser um booleano.")
+        self.__is_canceled = v

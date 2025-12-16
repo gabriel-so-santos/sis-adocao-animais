@@ -1,7 +1,7 @@
 {
   "policies": {
     "minimum_adopter_age": 18,
-    "reservation_duration_hours": 48,
+    "reservation_duration_hours": 0.1,
     "minimum_area": {
         "SMALL": 10,
         "MEDIUM": 30,

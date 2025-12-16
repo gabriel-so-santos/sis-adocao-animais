@@ -30,7 +30,7 @@ class Animal(ABC):
         temperament: list[str],
         status: AnimalStatus,
         id: int = None,
-        timestamp: datetime = None
+        timestamp: datetime = datetime.now()
     ):
         self.species = species
         self.breed = breed

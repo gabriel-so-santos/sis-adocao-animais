@@ -24,8 +24,8 @@ class AnimalModel(Base):
     size = Column(String, nullable=False)
     temperament = Column(String, nullable=False)
     status = Column(String, nullable=False)
-    timestamp = Column(DateTime, nullable=False, server_default=func.now())
-
+    timestamp = Column(DateTime, nullable=False)
+    
     extra_data = Column(JSON, nullable=True, default={})
 
     # -------------------------- RELATIONSHIPS --------------------------
