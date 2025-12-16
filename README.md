@@ -1,13 +1,14 @@
 # Sistema de Adoção de Animais
 
-## Informações Acadêmicas
-
 **Instituição:** Universidade Federal do Cariri (UFCA)  
 **Curso:** Engenharia de Software  
 **Disciplina:** Programação Orientada a Objetos  
 **Professor Orientador:** Jayr Alencar Pereira  
 **Aluno:** Gabriel Souza Santos  
 **Semestre:** 2025.2  
+
+### Especificação do Projeto:
+https://docs.google.com/document/d/1h4nOislnflnK_C9axnmleEKHO5fwWUoC/edit
 
 ---
 
@@ -42,7 +43,7 @@ O sistema foi desenvolvido para:
 
 ---
 
-## Arquitetura em Camadas
+## Arquitetura do Projeto
 
 O projeto está organizado nas seguintes camadas:
 
@@ -54,6 +55,94 @@ O projeto está organizado nas seguintes camadas:
   - Persistência de dados e acesso ao banco
 - **App**
   - Camada web com Flask (rotas, templates e front-end)
+ 
+### Estrutura:
+```
+sis-adocao-animais/
+│
+├── app/
+│   ├── __init__.py
+│   ├── routes.py
+│   ├── static/
+│   │   └── styles.css
+│   └── templates/
+│       ...
+│
+├── domain/
+│   ├── __init__.py
+│   ├── exceptions.py
+│   ├── adoptions/
+│   │   ├── __init__.py
+│   │   ├── adoption.py
+│   │   ├── adoption_return.py
+│   │   └── reservation_queue.py
+│   ├── animals/
+│   │   ├── __init__.py
+│   │   ├── animal.py
+│   │   ├── cat.py
+│   │   └── dog.py
+│   ├── enums/
+│   │   ├── adopter_enums.py
+│   │   ├── animal_enums.py
+│   │   ├── animal_status.py
+│   │   └── event_type.py
+│   ├── events/
+│   │   ├── __init__.py
+│   │   ├── animal_events.py
+│   │   └── event_converter.py
+│   ├── mixins/
+│   │   ├── trainable_mixin.py
+│   │   └── vaccinable_mixin.py
+│   └── people/
+│       ├── __init__.py
+│       ├── adopter.py
+│       └── person.py
+│
+├── infrastructure/
+│   ├── __init__.py
+│   ├── database/
+│   │   ├── database.db
+│   │   └── db_connection.py
+│   ├── db_models/
+│   │   ├── __init__.py
+│   │   ├── adopter_model.py
+│   │   ├── adoption_model.py
+│   │   ├── adoption_return_model.py
+│   │   ├── animal_model.py
+│   │   ├── event_model.py
+│   │   └── reservation_queue_model.py
+│   └── repositories/
+│       ├── __init__.py
+│       ├── adopter_repo.py
+│       ├── adoption_repo.py
+│       ├── adoption_return_repo.py
+│       ├── animal_repo.py
+│       ├── base_repo.py
+│       ├── event_repo.py
+│       └── reservation_queue_repo.py
+│
+├── services/
+│   ├── __init__.py
+│   ├── adopter_service.py
+│   ├── adoption_contract_service.py
+│   ├── adoption_fee_service.py
+│   ├── adoption_service.py
+│   ├── animal_service.py
+│   ├── compatibility_service.py
+│   ├── reservation_service.py
+│   └── timeline_service.py
+│
+└── tests/
+    ├── test_adopter.py
+    ├── test_adoption.py
+    ├── test_animal.py
+    ├── test_base_repository.py
+    ├── test_cat_and_dog.py
+    ├── test_compatibility_service.py
+    ├── test_person.py
+    ├── test_reservation_queue.py
+    └── test_reservation_service.py
+```
 
 ---
 
@@ -176,97 +265,6 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-
-## Estrutura Inicial do Projeto
-
-```
-sis-adocao-animais/
-│
-├── app/
-│   ├── __init__.py
-│   ├── routes.py
-│   ├── static/
-│   │   └── styles.css
-│   └── templates/
-│       ...
-│
-├── domain/
-│   ├── __init__.py
-│   ├── exceptions.py
-│   ├── adoptions/
-│   │   ├── __init__.py
-│   │   ├── adoption.py
-│   │   ├── adoption_return.py
-│   │   └── reservation_queue.py
-│   ├── animals/
-│   │   ├── __init__.py
-│   │   ├── animal.py
-│   │   ├── cat.py
-│   │   └── dog.py
-│   ├── enums/
-│   │   ├── adopter_enums.py
-│   │   ├── animal_enums.py
-│   │   ├── animal_status.py
-│   │   └── event_type.py
-│   ├── events/
-│   │   ├── __init__.py
-│   │   ├── animal_events.py
-│   │   └── event_converter.py
-│   ├── mixins/
-│   │   ├── trainable_mixin.py
-│   │   └── vaccinable_mixin.py
-│   └── people/
-│       ├── __init__.py
-│       ├── adopter.py
-│       └── person.py
-│
-├── infrastructure/
-│   ├── __init__.py
-│   ├── database/
-│   │   ├── database.db
-│   │   └── db_connection.py
-│   ├── db_models/
-│   │   ├── __init__.py
-│   │   ├── adopter_model.py
-│   │   ├── adoption_model.py
-│   │   ├── adoption_return_model.py
-│   │   ├── animal_model.py
-│   │   ├── event_model.py
-│   │   └── reservation_queue_model.py
-│   └── repositories/
-│       ├── __init__.py
-│       ├── adopter_repo.py
-│       ├── adoption_repo.py
-│       ├── adoption_return_repo.py
-│       ├── animal_repo.py
-│       ├── base_repo.py
-│       ├── event_repo.py
-│       └── reservation_queue_repo.py
-│
-├── services/
-│   ├── __init__.py
-│   ├── adopter_service.py
-│   ├── adoption_contract_service.py
-│   ├── adoption_fee_service.py
-│   ├── adoption_service.py
-│   ├── animal_service.py
-│   ├── compatibility_service.py
-│   ├── reservation_service.py
-│   └── timeline_service.py
-│
-└── tests/
-    ├── test_adopter.py
-    ├── test_adoption.py
-    ├── test_animal.py
-    ├── test_base_repository.py
-    ├── test_cat_and_dog.py
-    ├── test_compatibility_service.py
-    ├── test_person.py
-    ├── test_reservation_queue.py
-    └── test_reservation_service.py
-```
-
----
 
 ---
 
@@ -397,7 +395,7 @@ classDiagram
     %% =========================
 
     class BaseRepository {
-        <<interface>>
+         <<abstract>>
         + save(obj)
         + update(obj)
         + delete(id)
