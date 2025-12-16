@@ -2,6 +2,7 @@ from domain.adoptions.reservation_queue import ReservationQueue
 from domain.adoptions.adoption import Adoption
 from domain.enums.animal_status import AnimalStatus
 from .compatibility_service import CompatibilityService
+from .adoption_fee_service import AdoptionFeeService
 from datetime import datetime, timedelta
 from collections import defaultdict
 import json
@@ -44,18 +45,17 @@ class ReservationService:
         ongoing = {}
 
         for animal_id, queue in grouped.items():
-            # Primeira reserva define o início da fila
+            
             first = min(queue, key=lambda r: r.timestamp)
             queue_end = first.timestamp + timedelta(hours=queue_duration)
 
             animal = self.animal_repo.get_by_id(id=animal_id)
 
-            # Enriquecendo cada reserva com o adotante
-            enriched_reservations = []
+            reservations_data = []
             for r in sorted(queue):
                 adopter = self.adopter_repo.get_by_id(id=r.adopter_id)
 
-                enriched_reservations.append({
+                reservations_data.append({
                     "id": r.id,
                     "timestamp": r.timestamp,
                     "compatibility_rate": r.compatibility_rate,
@@ -65,7 +65,7 @@ class ReservationService:
             queue_data = {
                 "animal": animal,
                 "queue_ending": queue_end,
-                "reservations": enriched_reservations
+                "reservations": reservations_data
             }
 
             # Decide se a fila está concluída ou em andamento
@@ -107,17 +107,18 @@ class ReservationService:
 
         compatibility = CompatibilityService().calculate_rate(animal, adopter)
 
+        had_active_reservations = self.reservation_repo.has_active_reservations(animal_id)
+
         reservation = ReservationQueue(
             animal_id=animal_id,
             adopter_id=adopter_id,
             compatibility_rate=compatibility
         )
-
         was_saved = self.reservation_repo.save(reservation)
         if not was_saved:
             raise ValueError("Reserva já existente.")
 
-        if not self.reservation_repo.has_active_reservations(animal_id):
+        if not had_active_reservations:
             self.animal_repo.update_status(
                 id=animal_id,
                 new_status=AnimalStatus.RESERVED
@@ -127,26 +128,6 @@ class ReservationService:
         first_reservation = self.reservation_repo.get_first_reservation(animal_id)
         queue_ending = first_reservation.timestamp + timedelta(hours=queue_duration)
         return queue_ending
-
-    def confirm_reservation(self, reservation_id: int):
-        reservation = self.reservation_repo.get_by_id(id=reservation_id)
-
-        animal_id = reservation.animal_id
-        adopter_id = reservation.adopter_id
-
-        self.reservation_repo.clear_queue(animal_id=animal_id)
-
-        self.animal_repo.update_status(
-            id=animal_id,
-            new_status=AnimalStatus.ADOPTED
-        )
-
-        adoption = Adoption(
-            animal_id=animal_id,
-            adopter_id=adopter_id,
-            fee=0,
-        )
-        self.adoption_repo.save(adoption)
 
     def cancel_reservation(self, reservation_id: int):
         self.reservation_repo.cancel_reservation(reservation_id)
@@ -182,19 +163,27 @@ class ReservationService:
         selected = queue[0] 
         return selected
     
-    def confirm_adoption(self, reservation: ReservationQueue):
+    def confirm_adoption(self, reservation_id: int):
 
-        self.reservation_repo.clear_queue(reservation.animal_id)
+        reservation = self.reservation_repo.get_by_id(reservation_id)
+
+        animal_id = reservation.animal_id
+        adopter_id = reservation.adopter_id
+
+        self.reservation_repo.clear_queue(animal_id)
+
+        animal = self.animal_repo.get_by_id(id=animal_id)
+        fee = AdoptionFeeService().calculate_fee(animal)
 
         self.animal_repo.update_status(
-            id=reservation.animal_id,
+            id=animal_id,
             new_status=AnimalStatus.ADOPTED
         )
 
         adoption = Adoption(
-            animal_id=reservation.animal_id,
-            adopter_id=reservation.adopter_id,
-            fee=0
+            animal_id=animal_id,
+            adopter_id=adopter_id,
+            fee=fee
         )
 
         self.adoption_repo.save(adoption)

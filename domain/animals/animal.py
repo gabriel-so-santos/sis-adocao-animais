@@ -3,7 +3,11 @@ from datetime import datetime
 from domain.enums.animal_status import AnimalStatus
 from domain.enums.animal_enums import *
 from domain.exceptions import InvalidStatusTransitionError
+import json
 
+with open("settings.json", "r", encoding="utf-8") as f:
+    settings = json.load(f)
+    
 class Animal(ABC):
     """
     Classe abstrata que representa um animal registrado no sistema.
@@ -46,6 +50,24 @@ class Animal(ABC):
 
     def __str__(self):
         return f"{self.name}, {self.species_format()} {self.breed}"
+    
+    def age_group(self) -> str:
+        if self.age_months < 12:
+            return "young_pet"
+        elif self.age_months < 80:
+            return "adult_pet"
+        else:
+            return "senior_pet"
+        
+
+    def has_wary_temperament(self) -> bool:
+        wary_list = settings["policies"]["wary_animal_temperaments"]
+
+        for t in self.temperament:
+            if t in wary_list:
+                return True
+            
+        return False
     
     # -------------------------- PROPERTIES --------------------------
 

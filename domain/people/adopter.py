@@ -43,6 +43,14 @@ class Adopter(Person):
         self.has_pet_experience = has_pet_experience
         self.has_children_at_home = has_children_at_home
         self.has_other_animals = has_other_animals
+
+    def age_group(self) -> str:
+        if self.age < 18:
+            return "young"
+        elif self.age < 60:
+            return "adult"
+        else:
+            return "senior"
         
     # -------------------------- PROPERTIES --------------------------
 

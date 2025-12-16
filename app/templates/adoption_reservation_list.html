@@ -19,42 +19,43 @@
             <p class="empty-message">Nenhuma reserva concluída.</p>
         {% else %}
             {% for queue in finished_queues.values() %}
-                <div class="animal-group">
+                {% if queue.reservations|length > 0 %}
+                    <div class="animal-group">
 
-                    <h3 class="animal-title">
-                        <i class="{{ queue.animal.html_icon }}"></i>
-                        {{ queue.animal }}
-                    </h3>
+                        <h3 class="animal-title">
+                            <i class="{{ queue.animal.html_icon }}"></i>
+                            {{ queue.animal }}
+                        </h3>
 
-                    {% for r in queue.reservations %}
                         <div class="reservation-card finished">
 
                             <p>
-                                <strong>Adotante:</strong> {{ r.adopter }}<br>
+                                <strong>Adotante:</strong>
+                                {{ queue.reservations[0].adopter }}<br>
+
                                 <strong>Compatibilidade:</strong>
-                                {{ "%.2f"|format(r.compatibility_rate) }}%
+                                {{ "%.2f"|format(queue.reservations[0].compatibility_rate) }}%
                             </p>
 
                             <div class="reservation-actions">
-                                <a href="{{ url_for('confirm_adoption', id=r.id) }}"
-                                   class="reservation-button confirm">
+                                <a href="{{ url_for('confirm_adoption', id=queue.reservations[0].id) }}"
+                                class="reservation-button confirm">
                                     <i class="fa-solid fa-check"></i>
                                     Confirmar Adoção
                                 </a>
                             </div>
 
                             <div class="reservation-actions">
-                                <a href="{{ url_for('cancel_reservation', id=r.id) }}"
-                                   class="reservation-button cancel">
+                                <a href="{{ url_for('cancel_reservation', id=queue.reservations[0].id) }}"
+                                class="reservation-button cancel">
                                     <i class="fa-solid fa-x"></i>
                                     Cancelar
                                 </a>
                             </div>
 
                         </div>
-                    {% endfor %}
-
-                </div>
+                    </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
     </section>

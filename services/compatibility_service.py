@@ -43,33 +43,6 @@ class CompatibilityService:
         total_score = round(total_score, 2)
 
         return total_score
-
-    # ---------------- AUXILIAR METHODS ----------------
-
-    def __pet_age_group(self, animal: Cat | Dog) -> str:
-        if animal.age_months < 12:
-            return "young_pet"
-        elif animal.age_months < 80:
-            return "adult_pet"
-        else:
-            return "senior_pet"
-        
-    def __adopter_age_group(self, adopter: Adopter) -> str:
-        if adopter.age < 18:
-            return "young"
-        elif adopter.age < 60:
-            return "adult"
-        else:
-            return "senior"
-
-    def __has_wary_temperament(self, animal: Cat | Dog) -> bool:
-        wary_list = settings["policies"]["wary_animal_temperaments"]
-
-        for t in animal.temperament:
-            if t in wary_list:
-                return True
-            
-        return False
     
     # ---------------- SCORE METHODS ----------------
     
@@ -111,7 +84,7 @@ class CompatibilityService:
         """
         weight = self.weights["pet_age_vs_has_experience"]
 
-        pet_age_group = self.__pet_age_group(animal)
+        pet_age_group = animal.age_group()
         experience_key = "has_experience" if adopter.has_pet_experience else "none"
 
         base_score = self.scores["pet_age_vs_has_experience"][pet_age_group][experience_key]
@@ -127,7 +100,7 @@ class CompatibilityService:
 
         temperament_key = (
             "wary_temperament"
-            if self.__has_wary_temperament(animal)
+            if animal.has_wary_temperament()
             else "regular_temperament"
         )
 
@@ -143,7 +116,7 @@ class CompatibilityService:
         """
         weight = self.weights["adopter_age"]
 
-        age_group = self.__adopter_age_group(adopter)
+        age_group = adopter.age_group()
         base_score = self.scores["adopter_age"][age_group]
 
         return base_score * weight

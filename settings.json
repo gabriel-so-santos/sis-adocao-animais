@@ -1,12 +1,30 @@
 {
   "policies": {
     "minimum_adopter_age": 18,
+
     "reservation_duration_hours": 0.1,
+
     "minimum_area": {
-        "SMALL": 10,
-        "MEDIUM": 30,
-        "LARGE": 50
+      "SMALL": 15,
+      "MEDIUM": 35,
+      "LARGE": 50
+    },
+
+    "adoption_fee": {
+      "base_fee": 100,
+
+      "age_adjustments": {
+        "young_pet": 40,
+        "adult_pet": 0,
+        "senior_pet": -50
       },
+
+      "limits": {
+        "minimum_fee": 0,
+        "maximum_fee": 250
+      }
+    },
+
     "wary_animal_temperaments": [
     "Arisco",
     "Agressivo",
@@ -16,43 +34,42 @@
   
   "compatibility": {
     "weights": {
-      "size_vs_area": 0.30,
+      "size_vs_area": 0.25,
       "size_vs_housing": 0.10,
       "pet_age_vs_has_experience": 0.15,
-      "temperament_vs_has_children": 0.25,
+      "temperament_vs_has_children": 0.30,
       "adopter_age": 0.10,
       "other_animals": 0.10
     },
     "scores": {
       "size_vs_area": {
-        "SMALL": { "above_min": 100, "bellow_min": 80 },
-        "MEDIUM": { "above_min": 100, "bellow_min": 50 },
-        "LARGE": { "above_min": 100, "bellow_min": 20 }
+        "SMALL":  { "above_min": 100, "bellow_min": 85 },
+        "MEDIUM": { "above_min": 100, "bellow_min": 65 },
+        "LARGE":  { "above_min": 100, "bellow_min": 40 }
       },
       "size_vs_housing": {
-        "SMALL": { "APARTMENT": 100, "HOUSE": 100 },
-        "MEDIUM": { "APARTMENT": 70,  "HOUSE": 100 },
-        "LARGE": { "APARTMENT": 50,  "HOUSE": 100 }
+        "SMALL":  { "APARTMENT": 100, "HOUSE": 100 },
+        "MEDIUM": { "APARTMENT": 75,  "HOUSE": 100 },
+        "LARGE":  { "APARTMENT": 55,  "HOUSE": 100 }
       },
       "pet_age_vs_has_experience": {
-        "young_pet": { "has_experience": 100, "none": 50},
-        "adult_pet": { "has_experience": 100, "none": 80},
-        "senior_pet": { "has_experience": 100, "none": 60}
+        "young_pet": { "has_experience": 100, "none": 60},
+        "adult_pet": { "has_experience": 100, "none": 85},
+        "senior_pet": { "has_experience": 100, "none": 80}
       },
       "temperament_vs_has_children": {
         "regular_temperament": { "has_children": 100, "none": 100 },
-        "wary_temperament": { "has_children": 50, "none": 90 }
+        "wary_temperament": { "has_children": 35, "none": 90 }
       },
       "adopter_age": {
         "young": 0,
         "adult": 100,
-        "senior": 80
+        "senior": 85
       },
       "has_other_animals": {
-        "true": 80,
+        "true": 85,
         "false": 100
       }
     }
   }
 }
-
