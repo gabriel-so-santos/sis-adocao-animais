@@ -7,7 +7,7 @@ import json
 
 with open("settings.json", "r", encoding="utf-8") as f:
     settings = json.load(f)
-    
+
 class Animal(ABC):
     """
     Classe abstrata que representa um animal registrado no sistema.
@@ -229,3 +229,6 @@ class Animal(ABC):
             "QUARANTINE": "Em Quarentena",
             "UNADOPTABLE": "Indisponível"
         }.get(self.status.name)
+    
+    def has_wary_temperament_format(self):
+        return "Sim" if self.has_wary_temperament() else "Não"

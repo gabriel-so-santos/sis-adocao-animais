@@ -47,5 +47,8 @@ class Dog(VaccinableMixin, TrainableMixin, Animal):
     def extra_info(self):
         return f"<strong>Precisa de passeio?:</strong> {'Sim' if self.needs_walk else 'Não'}"
     
+    def extra_info_str(self):
+        return f"Precisa de passeio?: {'Sim' if self.needs_walk else 'Não'}"
+    
     def needs_walk_format(self):
         return 'Sim' if self.needs_walk else 'Não'

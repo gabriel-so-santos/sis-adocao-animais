@@ -3,6 +3,7 @@ from .animal_service import AnimalService
 from .adopter_service import AdopterService
 from .reservation_service import ReservationService
 from .adoption_service import AdoptionService
+from .adoption_contract_service import AdoptionContractService
 
 __all__ = [
     "TimelineService",
@@ -10,4 +11,5 @@ __all__ = [
     "AdopterService",
     "ReservationService",
     "AdoptionService",
+    "AdoptionContractService",
 ]

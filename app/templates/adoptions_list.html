@@ -33,11 +33,18 @@
                         <strong>Data:</strong> {{ adoption.timestamp.strftime("%d/%m/%Y %H:%M") }}
                     </p>
 
+                    <a href="{{ url_for('adoption_contract', adoption_id=adoption.id) }}"
+                    class="list-button">
+                        <i class="fa-solid fa-file-contract"></i>
+                        Ver Contrato
+                    </a>
+
                     <a href="{{ url_for('animal_details', id=adoption.animal.id) }}"
                     class="list-button">
                         <i class="fa-solid fa-eye"></i> Ver Animal
                     </a>
 
+                    <br><br>
                     <a href="{{ url_for('adoption_return_registration', animal_id=adoption.animal.id) }}" class="details-button danger">
                         <i class="fa-solid fa-arrows-turn-to-dots"></i> Registrar Devolução
                     </a>

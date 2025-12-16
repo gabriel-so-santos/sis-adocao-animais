@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Contrato de Adoção</title>
+{% endblock %}
+
+{% block body %}
+<div class="details-container">
+    <h1 class="details-title">
+        <i class="fa-solid fa-file-contract"></i>
+        Contrato de Adoção
+    </h1>
+
+    <pre class="contract-box">
+{{ contract }}
+    </pre>
+
+    <a href="{{ url_for('adoptions_list') }}" class="details-button">
+        <i class="fa-solid fa-arrow-left"></i>
+        Voltar
+    </a>
+
+    <a href="{{ url_for('download_adoption_contract', adoption_id=adoption_id) }}"
+    class="details-button">
+        <i class="fa-solid fa-download"></i>
+        Baixar contrato (.txt)
+    </a>
+
+</div>
+{% endblock %}

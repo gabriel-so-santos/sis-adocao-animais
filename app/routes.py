@@ -1,12 +1,13 @@
 import json
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, Response
 from main import(
     app,
     animal_service,
     adopter_service,
     reservation_service,
     adoption_service,
-    timeline_service
+    timeline_service,
+    contract_service
 )
 
 with open("settings.json", "r", encoding="utf-8") as f:
@@ -205,4 +206,30 @@ def save_adoption_return():
             "animal_details",
             id=int(request.form["animal_id"])
         )
+    )
+
+@app.route("/adoptions/<int:adoption_id>/contract")
+def adoption_contract(adoption_id):
+
+    contract_text = contract_service.generate_contract(adoption_id)
+
+    return render_template(
+        "adoption_contract.html",
+        adoption_id=adoption_id,
+        contract=contract_text
+    )
+
+@app.route("/adoptions/<int:adoption_id>/contract/download")
+def download_adoption_contract(adoption_id):
+
+    contract_text = contract_service.generate_contract(adoption_id)
+
+    filename = f"contrato_adocao_{adoption_id}.txt"
+
+    return Response(
+        contract_text,
+        mimetype="text/plain",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
     )

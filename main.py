@@ -41,6 +41,11 @@ timeline_service = TimelineService(
     event_repo=event_repo,
     adopter_repo=adopter_repo
 )
+contract_service = AdoptionContractService(
+    adoption_repo=adoption_repo,
+    animal_repo=animal_repo,
+    adopter_repo=adopter_repo
+)
 
 # -------------------------- APP --------------------------
 app = Flask(
