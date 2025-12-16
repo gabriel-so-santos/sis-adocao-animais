@@ -394,7 +394,7 @@ classDiagram
     %% =========================
 
     class BaseRepository {
-        <<interface>>
+         <<abstract>>
         + save(obj)
         + update(obj)
         + delete(id)
