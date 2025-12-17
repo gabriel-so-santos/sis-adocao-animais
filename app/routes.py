@@ -145,6 +145,45 @@ def save_adopter():
             "error.html",
             err_msg=str(e)
         )
+    
+
+@app.route("/adopters/<int:adopter_id>/edit", methods=["GET"])
+def edit_adopter(adopter_id):
+    form_data = request.form.to_dict()
+
+    if "age" in form_data:
+        form_data["age"] = int(form_data["age"])
+
+    for key in ["has_pet_experience", "has_children_at_home", "has_other_animals"]:
+        if key in form_data:
+            form_data[key] = form_data[key] == "true"
+
+    adopter_service.update(adopter_id, **form_data)
+    return redirect(url_for("adopters_list"))
+
+
+@app.route("/adopters/<int:adopter_id>/update", methods=["POST"])
+def update_adopter(adopter_id):
+    form_data = request.form.to_dict()
+
+   
+    if "age" in form_data and form_data["age"]:
+        form_data["age"] = int(form_data["age"])
+
+    if "usable_area" in form_data and form_data["usable_area"]:
+        form_data["usable_area"] = float(form_data["usable_area"])
+
+    for key in ["has_pet_experience", "has_children_at_home", "has_other_animals"]:
+        if key in form_data:
+            form_data[key] = form_data[key] == "true"
+
+    """"from domain.enums.adopter_enums import HousingType
+    if "housing_type" in form_data and form_data["housing_type"]:
+        form_data["housing_type"] = HousingType[form_data["housing_type"].upper()]"""
+
+    adopter_service.update(adopter_id, **form_data)
+
+    return redirect(url_for("adopters_list"))
 
 # -------------------------- RESERVATION --------------------------
 @app.route("/reservations")

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Editar Adotante</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <h1>Editar Adotante</h1>
+
+    <form action="{{ url_for('update_adopter', adopter_id=adopter.id) }}" method="POST" class="form">
+
+        <!-- Nome -->
+        <label for="name">Nome completo:</label>
+        <input type="text" id="name" name="name" value="{{ adopter.name }}" required>
+
+        <!-- Idade -->
+        <label for="age">Idade:</label>
+        <input type="number" id="age" name="age" min="{{ minimum_age }}" max=128 value="{{ adopter.age }}" required>
+
+        <!-- Tipo de moradia -->
+        <label for="housing_type">Tipo de moradia:</label>
+        <select id="housing_type" name="housing_type" required>
+            <option value="house" {% if adopter.housing_type.value == "house" %}selected{% endif %}>Casa</option>
+            <option value="apartment" {% if adopter.housing_type.value == "apartment" %}selected{% endif %}>Apartamento</option>
+        </select>
+
+        <!-- Área útil -->
+        <label for="usable_area">Área disponível (m²):</label>
+        <input type="number" id="usable_area" name="usable_area" step="0.1" min="0" value="{{ adopter.usable_area }}" required>
+
+        <!-- Experiência com pets -->
+        <label for="has_pet_experience">Já teve experiência com outros pets?</label>
+        <select id="has_pet_experience" name="has_pet_experience" required>
+            <option value="true" {% if adopter.has_pet_experience %}selected{% endif %}>Sim</option>
+            <option value="false" {% if not adopter.has_pet_experience %}selected{% endif %}>Não</option>
+        </select>
+
+        <!-- Crianças em casa -->
+        <label for="has_children_at_home">Possui crianças na residência?</label>
+        <select id="has_children_at_home" name="has_children_at_home" required>
+            <option value="true" {% if adopter.has_children_at_home %}selected{% endif %}>Sim</option>
+            <option value="false" {% if not adopter.has_children_at_home %}selected{% endif %}>Não</option>
+        </select>
+
+        <!-- Outros animais -->
+        <label for="has_other_animals">Possui outros animais?</label>
+        <select id="has_other_animals" name="has_other_animals" required>
+            <option value="true" {% if adopter.has_other_animals %}selected{% endif %}>Sim</option>
+            <option value="false" {% if not adopter.has_other_animals %}selected{% endif %}>Não</option>
+        </select>
+
+        <!-- Botão -->
+        <button type="submit" class="submit-buttom">Atualizar Adotante</button>
+
+    </form>
+</div>
+
+{% endblock %}

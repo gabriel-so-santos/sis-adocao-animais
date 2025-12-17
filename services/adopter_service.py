@@ -41,3 +41,23 @@ class AdopterService:
             raise ValueError("Este adotante já tem registro cadastrado.")
 
         return adopter
+    
+    def get_by_id(self, adopter_id: int):
+        return self.adopter_repo.get_by_id(adopter_id)
+
+    def update(self, adopter_id: int, **kwargs):
+        adopter = self.adopter_repo.get_by_id(adopter_id)
+        if not adopter:
+            raise ValueError("Adotante não encontrado")
+
+        # Converter enums
+        if "housing_type" in kwargs:
+            kwargs["housing_type"] = HousingType(kwargs["housing_type"].upper())
+
+        # Atualizar atributos
+        for key, value in kwargs.items():
+            if hasattr(adopter, key):
+                setattr(adopter, key, value)
+
+        self.adopter_repo.update(adopter)
+        return adopter
