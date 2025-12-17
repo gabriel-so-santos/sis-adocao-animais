@@ -104,3 +104,28 @@ class AnimalService:
             notes=form_data["notes"]
         )
         self.event_repo.save(training)
+
+
+    def get_by_id(self, animal_id: int):
+        return self.animal_repo.get_by_id(animal_id)
+
+    from domain.enums.animal_enums import Gender, Size
+
+    def update(self, animal_id, **kwargs):
+        
+        animal_model = self.animal_repo.get_by_id(animal_id)
+        if not animal_model:
+            raise ValueError("Animal não encontrado")
+
+        if "gender" in kwargs:
+            kwargs["gender"] = Gender(kwargs["gender"].upper())  
+        
+        if "size" in kwargs:
+            kwargs["size"] = Size(kwargs["size"].upper())  
+
+        for key, value in kwargs.items():
+            if hasattr(animal_model, key):
+                setattr(animal_model, key, value)
+
+        self.animal_repo.update(animal_model)
+        return animal_model

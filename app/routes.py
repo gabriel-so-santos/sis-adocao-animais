@@ -98,6 +98,29 @@ def animal_timeline(animal_id):
         events=events
     )
 
+@app.route("/animals/<int:animal_id>/edit", methods=["GET"])
+def edit_animal(animal_id):
+    animal = animal_service.get_by_id(animal_id)
+    return render_template("animal_edit.html", animal=animal)
+
+
+@app.route("/animals/update", methods=["POST"])
+def update_animal():
+    data = request.form
+    animal_id = int(data.get("animal_id"))
+
+    animal_service.update(
+        animal_id=animal_id,
+        name=data.get("name"),
+        breed=data.get("breed"),
+        gender=data.get("gender"),
+        age_months=int(data.get("age_months")),
+        size=data.get("size"),
+        temperament=[t.strip() for t in data.get("temperament", "").split(",")],
+    )
+
+    return redirect(url_for("animals_list"))
+
 # -------------------------- ADOPTERS --------------------------
 @app.route("/adopters", methods=["GET"])
 def adopters_list():

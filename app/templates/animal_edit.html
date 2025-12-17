@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Editar Animal</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1><i class="fa-solid fa-pen"></i> Editar Animal</h1>
+
+    <form action="{{ url_for('update_animal') }}" method="POST" class="form">
+
+        <input type="hidden" name="animal_id" value="{{ animal.id }}">
+
+        <!-- Nome -->
+        <label for="name">Nome do Animal:</label>
+        <input type="text" id="name" name="name" value="{{ animal.name }}" required>
+
+        <!-- Raça -->
+        <label for="breed">Raça:</label>
+        <input type="text" id="breed" name="breed" value="{{ animal.breed }}" required>
+
+        <!-- Sexo -->
+        <label for="gender">Sexo:</label>
+        <select id="gender" name="gender" required>
+            <option value="" disabled>Selecione</option>
+            <option value="male" {% if animal.gender == 'male' %}selected{% endif %}>Macho</option>
+            <option value="female" {% if animal.gender == 'female' %}selected{% endif %}>Fêmea</option>
+        </select>
+
+        <!-- Idade -->
+        <label for="age_months">Idade (meses):</label>
+        <input type="number" id="age_months" name="age_months" value="{{ animal.age_months }}" min="0" required>
+
+        <!-- Porte -->
+        <label for="size">Porte:</label>
+        <select id="size" name="size" required>
+            <option value="" disabled>Selecione</option>
+            <option value="small" {% if animal.size == 'small' %}selected{% endif %}>Pequeno</option>
+            <option value="medium" {% if animal.size == 'medium' %}selected{% endif %}>Médio</option>
+            <option value="large" {% if animal.size == 'large' %}selected{% endif %}>Grande</option>
+        </select>
+
+        <!-- Temperamento -->
+        <label for="temperament">Temperamento:</label>
+        <input type="text" id="temperament" name="temperament" value="{{ animal.temperament|join(', ') }}">
+        <p class="hint">Separe múltiplos valores com vírgulas.</p>
+
+        
+        </div>
+
+        <!-- Botão -->
+        <button type="submit" class="submit-buttom">Salvar Alterações</button>
+        
+    </form>
+</div>
+{% endblock %}

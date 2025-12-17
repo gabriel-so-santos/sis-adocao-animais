@@ -109,34 +109,7 @@ class AnimalRepository(BaseRepository):
         models = self.session.query(AnimalModel).filter(AnimalModel.status.in_(reservable)).all()
 
         return [self._to_domain(model) for model in models]
-    
-    @override  
-    def update(self, animal: Cat | Dog) -> bool:
-        """
-        Atualiza um registro existente no banco com base nos dados
-        fornecidos pela entidade de domínio (com execeção do stuatus do animal).
 
-        Args:
-            animal (Cat | Dog): Entidade contendo os dados atualizados.
-
-        Returns:
-            bool: True se a atualização foi bem-sucedida, False se o registro não existir.
-        """
-        animal_model = self._to_model(animal)
-
-        if not animal_model:
-            return False
-        
-        animal_model.breed = animal.breed
-        animal_model.name = animal.name
-        animal_model.gender = animal.gender.value
-        animal_model.age_months = animal.age_months
-        animal_model.size = animal.size.value
-        animal_model.temperament = json.dumps(animal.temperament)
-
-        self.session.commit()
-        self.session.refresh(animal_model)
-        return True
 
     def update_status(self, id: int, new_status: AnimalStatus) -> None:
         """
